@@ -10,7 +10,7 @@ const TITLE = __filename.split("/").pop();
 const TEST_TYPES = {
     array: 0,
     bignum: 0,
-    binary: 0,
+    binary: 1,
     bool: 1,
     ext: 0,
     map: 0,
