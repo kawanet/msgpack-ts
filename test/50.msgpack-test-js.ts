@@ -1,7 +1,7 @@
 "use strict";
 
 import * as assert from "assert";
-import {Msgpack} from "../";
+import * as msgpack from "../";
 import {Exam} from "msgpack-test-js";
 
 const TITLE = __filename.split("/").pop();
@@ -30,7 +30,7 @@ describe(TITLE, () => {
             let title = type + ": " + exam.stringify(type);
             it(title, () => {
                 let value = exam.getValue(type);
-                let buffer = Msgpack.from(value).toMsgpack();
+                let buffer = msgpack.encode(value);
                 const hint = exam.stringify(0) + " != " + binaryToHex(buffer);
                 assert(exam.matchMsgpack(buffer), hint);
             });

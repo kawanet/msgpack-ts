@@ -40,7 +40,7 @@ describe(TITLE, () => {
         assert.equal(atos(new m.MsgFixInt(1).toMsgpack()), "01");
         assert.equal(atos(new m.MsgFixInt(127).toMsgpack()), "7f");
 
-        assert.equal(atos(m.Msgpack.from(127).toMsgpack()), "7f");
+        assert.equal(atos(m.encode(127)), "7f");
     });
 
     it("MsgInt8", () => {

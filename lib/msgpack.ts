@@ -1,15 +1,17 @@
 "use strict";
 
 import {isMsg, Msg, MsgInterface} from "msg-interface";
-import {MsgUInt64, MsgInt64} from "msg-int64";
+import {MsgInt64, MsgUInt64} from "msg-int64";
 
 const UINT16_NEXT = 0x10000;
 const UINT32_NEXT = 0x100000000;
 const undef = void 0;
 
-/**
- *
- */
+export function encode(value: any) {
+    const msg = createMsgpack(value);
+    if (!msg) return;
+    return msg.toMsgpack();
+}
 
 abstract class MsgValue extends Msg {
     constructor(value?: any) {
@@ -27,49 +29,6 @@ abstract class MsgValue extends Msg {
 ((P) => {
     P.value = undef;
 })(MsgValue.prototype);
-
-export class Msgpack {
-    static from(value: any): MsgInterface {
-        const type = typeof value;
-        const f = typeMap[type];
-        if (f) return f(value);
-    }
-}
-
-const typeMap = {
-    number: fromNumber,
-    boolean: fromBoolean,
-    string: fromString,
-    object: fromObject,
-};
-
-function fromObject(value: object) {
-    if (value == null) {
-        return new MsgNil();
-    }
-
-    if (isMsg(value)) {
-        return value;
-    }
-
-    if (Array.isArray(value)) {
-        return new MsgArray(value);
-    }
-
-    if (Buffer.isBuffer(value)) {
-        return new MsgBinary(value);
-    }
-
-    if (MsgInt64.isInt64BE(value)) {
-        return new MsgInt64(value.toBuffer());
-    }
-
-    if (MsgUInt64.isUint64BE(value)) {
-        return new MsgUInt64(value.toBuffer());
-    }
-
-    return new MsgMap(value);
-}
 
 export class MsgBinary extends MsgValue {
     constructor(value: Buffer) {
@@ -101,7 +60,7 @@ export class MsgBinary extends MsgValue {
 export class MsgArray extends Msg {
     constructor(value: any[]) {
         super();
-        const array = this.array = [].map.call(value, (item) => Msgpack.from(item));
+        const array = this.array = [].map.call(value, (item) => createMsgpack(item));
         this.msgpackLength = array.reduce((total: number, msg: MsgInterface) => total + msg.msgpackLength, 5);
     }
 
@@ -130,7 +89,7 @@ export class MsgMap extends Msg {
         const array = this.array = [];
         Object.keys(value).forEach((key) => {
             const val = value[key];
-            array.push(Msgpack.from(key), Msgpack.from(val));
+            array.push(createMsgpack(key), createMsgpack(val));
         });
         this.msgpackLength = array.reduce((total: number, msg: MsgInterface) => total + msg.msgpackLength, 5);
     }
@@ -152,14 +111,6 @@ export class MsgMap extends Msg {
     }
 
     array: MsgInterface[];
-}
-
-function fromBoolean(value: boolean) {
-    return new MsgBoolean(value);
-}
-
-function fromString(value: string) {
-    return new MsgString(value);
 }
 
 export class MsgNil extends MsgValue {
@@ -389,6 +340,56 @@ setMsgpackLength(MsgFloat64, 9);
 /**
  * @private
  */
+
+const typeMap = {
+    boolean: fromBoolean,
+    number: fromNumber,
+    object: fromObject,
+    string: fromString,
+};
+
+function createMsgpack(value: any) {
+    const type = typeof value;
+    const f = typeMap[type];
+    if (!f) return;
+    return f(value);
+}
+
+function fromBoolean(value: boolean) {
+    return new MsgBoolean(value);
+}
+
+function fromString(value: string) {
+    return new MsgString(value);
+}
+
+function fromObject(value: object) {
+    if (value == null) {
+        return new MsgNil();
+    }
+
+    if (isMsg(value)) {
+        return value;
+    }
+
+    if (Array.isArray(value)) {
+        return new MsgArray(value);
+    }
+
+    if (Buffer.isBuffer(value)) {
+        return new MsgBinary(value);
+    }
+
+    if (MsgInt64.isInt64BE(value)) {
+        return new MsgInt64(value.toBuffer());
+    }
+
+    if (MsgUInt64.isUint64BE(value)) {
+        return new MsgUInt64(value.toBuffer());
+    }
+
+    return new MsgMap(value);
+}
 
 function fromNumber(value: number) {
     const isInteger = ((value | 0) === value) || (0 < value && value < UINT32_NEXT && !(value % 1));
