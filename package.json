@@ -1,0 +1,40 @@
+{
+  "name": "msgpack-ts",
+  "description": "TypeScript msgpack encoder",
+  "version": "0.1.0",
+  "author": "@kawanet",
+  "bugs": {
+    "url": "https://github.com/kawanet/msgpack-ts/issues"
+  },
+  "dependencies": {
+    "msg-interface": "github:kawanet/msg-interface"
+  },
+  "devDependencies": {
+    "@types/mocha": "^2.2.44",
+    "@types/node": "^8.0.55",
+    "mocha": "^4.0.1",
+    "msgpack-test-js": "github:kawanet/msgpack-test-js#wip",
+    "typescript": "^2.6.2"
+  },
+  "engines": {
+    "node": ">=6"
+  },
+  "homepage": "https://github.com/kawanet/msgpack-ts#readme",
+  "keywords": [
+    "typescript",
+    "messagepack",
+    "msgpack"
+  ],
+  "license": "MIT",
+  "main": "lib/msgpack.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kawanet/msgpack-ts.git"
+  },
+  "scripts": {
+    "mocha": "./node_modules/.bin/mocha test",
+    "test": "npm run mocha",
+    "tsc": "./node_modules/.bin/tsc"
+  },
+  "typings": "lib/msgpack.ts"
+}
