@@ -12,7 +12,7 @@ const TEST_TYPES = {
     bignum: 0,
     binary: 1,
     bool: 1,
-    ext: 0,
+    ext: 1,
     map: 0,
     nil: 1,
     number: 1,

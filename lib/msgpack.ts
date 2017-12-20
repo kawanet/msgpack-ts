@@ -1,6 +1,6 @@
 "use strict";
 
-import {Msg, MsgInterface} from "../../msg-interface";
+import {isMsg, Msg, MsgInterface} from "../../msg-interface";
 
 const UINT16_NEXT = 0x10000;
 const UINT32_NEXT = 0x100000000;
@@ -45,6 +45,10 @@ const typeMap = {
 function fromObject(value: object) {
     if (value == null) {
         return new MsgNil();
+    }
+
+    if (isMsg(value)) {
+        return value;
     }
 
     if (Array.isArray(value)) {
