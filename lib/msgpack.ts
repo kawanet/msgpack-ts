@@ -1,6 +1,7 @@
 "use strict";
 
-import {isMsg, Msg, MsgInterface} from "../../msg-interface";
+import {isMsg, Msg, MsgInterface} from "msg-interface";
+import {MsgUInt64, MsgInt64} from "msg-int64";
 
 const UINT16_NEXT = 0x10000;
 const UINT32_NEXT = 0x100000000;
@@ -57,6 +58,14 @@ function fromObject(value: object) {
 
     if (Buffer.isBuffer(value)) {
         return new MsgBinary(value);
+    }
+
+    if (MsgInt64.isInt64BE(value)) {
+        return new MsgInt64(value.toBuffer());
+    }
+
+    if (MsgUInt64.isUint64BE(value)) {
+        return new MsgUInt64(value.toBuffer());
     }
 
     return new MsgMap(value);
@@ -372,6 +381,8 @@ setMsgpackLength(MsgInt16, 3);
 setMsgpackLength(MsgUInt16, 3);
 setMsgpackLength(MsgInt32, 5);
 setMsgpackLength(MsgUInt32, 5);
+setMsgpackLength(MsgUInt64, 9);
+setMsgpackLength(MsgInt64, 9);
 setMsgpackLength(MsgFloat32, 5);
 setMsgpackLength(MsgFloat64, 9);
 

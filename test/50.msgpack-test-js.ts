@@ -8,16 +8,16 @@ const TITLE = __filename.split("/").pop();
 
 // set 1 for types to run test
 const TEST_TYPES = {
-    array: 0,
-    bignum: 0,
+    array: 1,
+    bignum: 1,
     binary: 1,
     bool: 1,
     ext: 1,
-    map: 0,
+    map: 1,
     nil: 1,
     number: 1,
     string: 1,
-    timestamp: 0
+    timestamp: 1
 };
 
 describe(TITLE, () => {
