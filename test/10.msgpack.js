@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var assert = require("assert");
-var msg_interface_1 = require("../../msg-interface");
-var m = require("../lib/msgpack");
+var msg_interface_1 = require("msg-interface");
+var m = require("../");
 var TITLE = __filename.split("/").pop();
 describe(TITLE, function () {
     it("MsgNil", function () {

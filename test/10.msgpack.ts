@@ -1,6 +1,6 @@
 import * as assert from "assert";
-import {isMsg} from "../../msg-interface";
-import * as m from "../lib/msgpack";
+import {isMsg} from "msg-interface";
+import * as m from "../";
 
 const TITLE = __filename.split("/").pop();
 
