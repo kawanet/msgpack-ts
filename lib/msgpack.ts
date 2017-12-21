@@ -8,7 +8,7 @@ const UINT32_NEXT = 0x100000000;
 const undef = void 0;
 
 export function encode(value: any) {
-    const msg = createMsgpack(value);
+    const msg = encodeMsgpack(value);
     if (!msg) return;
     return msg.toMsgpack();
 }
@@ -60,7 +60,7 @@ export class MsgBinary extends MsgValue {
 export class MsgArray extends Msg {
     constructor(value: any[]) {
         super();
-        const array = this.array = [].map.call(value, (item) => createMsgpack(item));
+        const array = this.array = [].map.call(value, (item) => encodeMsgpack(item));
         this.msgpackLength = array.reduce((total: number, msg: MsgInterface) => total + msg.msgpackLength, 5);
     }
 
@@ -89,7 +89,7 @@ export class MsgMap extends Msg {
         const array = this.array = [];
         Object.keys(value).forEach((key) => {
             const val = value[key];
-            array.push(createMsgpack(key), createMsgpack(val));
+            array.push(encodeMsgpack(key), encodeMsgpack(val));
         });
         this.msgpackLength = array.reduce((total: number, msg: MsgInterface) => total + msg.msgpackLength, 5);
     }
@@ -348,7 +348,7 @@ const typeMap = {
     string: fromString,
 };
 
-function createMsgpack(value: any) {
+function encodeMsgpack(value: any) {
     const type = typeof value;
     const f = typeMap[type];
     if (!f) return;
