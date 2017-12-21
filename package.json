@@ -27,7 +27,7 @@
     "msgpack"
   ],
   "license": "MIT",
-  "main": "lib/msgpack.js",
+  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kawanet/msgpack-ts.git"
@@ -37,5 +37,5 @@
     "test": "npm run mocha",
     "tsc": "./node_modules/.bin/tsc"
   },
-  "typings": "lib/msgpack.ts"
+  "typings": "lib/index.ts"
 }
