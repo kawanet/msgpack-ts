@@ -33,6 +33,8 @@ describe(TITLE, function () {
     });
 });
 function binaryToHex(buffer) {
+    if (!buffer)
+        return buffer + "";
     return [].map.call(buffer, toHex).join("-");
 }
 function toHex(v) {

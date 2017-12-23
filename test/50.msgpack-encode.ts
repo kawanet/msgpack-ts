@@ -29,8 +29,8 @@ describe(TITLE, () => {
         exam.getTypes(TEST_TYPES).forEach((type) => {
             let title = type + ": " + exam.stringify(type);
             it(title, () => {
-                let value = exam.getValue(type);
-                let buffer = msgpack.encode(value);
+                const value = exam.getValue(type);
+                const buffer: Buffer = msgpack.encode(value);
                 const hint = exam.stringify(0) + " != " + binaryToHex(buffer);
                 assert(exam.matchMsgpack(buffer), hint);
             });
@@ -38,7 +38,8 @@ describe(TITLE, () => {
     });
 });
 
-function binaryToHex(buffer) {
+function binaryToHex(buffer): string {
+    if (!buffer) return buffer + "";
     return [].map.call(buffer, toHex).join("-");
 }
 

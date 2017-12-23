@@ -1,38 +1,14 @@
 import {MsgValue} from "./msg-value";
-import {MsgInterface} from "msg-interface";
-
-const UINT16_NEXT = 0x10000;
-const UINT32_NEXT = 0x100000000;
-
-export function encodeNumber(value: number): MsgInterface {
-    const isInteger = ((value | 0) === value) || (0 < value && value < UINT32_NEXT && !(value % 1));
-
-    if (!isInteger) {
-        return new MsgFloat64(value);
-    } else if (-33 < value && value < 128) {
-        return new MsgFixInt(value);
-    } else if (value > 0) {
-        if (value < 256) {
-            return new MsgUInt8(value);
-        } else if (value < UINT16_NEXT) {
-            return new MsgUInt16(value);
-        } else if (value < UINT32_NEXT) {
-            return new MsgUInt32(value);
-        }
-    } else if (value < 0) {
-        if (-129 < value) {
-            return new MsgInt8(value);
-        } else if (-32769 < value) {
-            return new MsgInt16(value);
-        } else {
-            return new MsgInt32(value);
-        }
-    }
-}
 
 export class MsgFixInt extends MsgValue {
     constructor(value: number) {
         super(value);
+    }
+
+    static decode(buffer: Buffer, offset?: number) {
+        let value = buffer[offset];
+        if (value > 127) value -= 256;
+        return new MsgFixInt(value);
     }
 
     writeMsgpackTo(buffer: Buffer, offset?: number) {
@@ -44,6 +20,10 @@ export class MsgFixInt extends MsgValue {
 export class MsgInt8 extends MsgValue {
     constructor(value: number) {
         super(value);
+    }
+
+    static decode(buffer: Buffer, offset: number) {
+        return new MsgInt8(buffer.readInt8(offset + 1));
     }
 
     writeMsgpackTo(buffer: Buffer, offset?: number) {
@@ -58,7 +38,11 @@ export class MsgUInt8 extends MsgValue {
         super(value);
     }
 
-    writeMsgpackTo(buffer: Buffer, offset?: number) {
+    static decode(buffer: Buffer, offset: number) {
+        return new MsgUInt8(buffer.readUInt8(offset + 1));
+    }
+
+    writeMsgpackTo(buffer: Buffer, offset: number) {
         buffer[offset] = 0xcc;
         buffer.writeUInt8(+this.value, offset + 1);
         return 2;
@@ -68,6 +52,10 @@ export class MsgUInt8 extends MsgValue {
 export class MsgInt16 extends MsgValue {
     constructor(value: number) {
         super(value);
+    }
+
+    static decode(buffer: Buffer, offset: number) {
+        return new MsgInt16(buffer.readInt16BE(offset + 1));
     }
 
     writeMsgpackTo(buffer: Buffer, offset?: number) {
@@ -82,6 +70,10 @@ export class MsgUInt16 extends MsgValue {
         super(value);
     }
 
+    static decode(buffer: Buffer, offset: number) {
+        return new MsgUInt16(buffer.readUInt16BE(offset + 1));
+    }
+
     writeMsgpackTo(buffer: Buffer, offset?: number) {
         buffer[offset] = 0xcd;
         buffer.writeUInt16BE(+this.value, offset + 1);
@@ -92,6 +84,10 @@ export class MsgUInt16 extends MsgValue {
 export class MsgInt32 extends MsgValue {
     constructor(value: number) {
         super(value);
+    }
+
+    static decode(buffer: Buffer, offset: number) {
+        return new MsgInt32(buffer.readInt32BE(offset + 1));
     }
 
     writeMsgpackTo(buffer: Buffer, offset?: number) {
@@ -106,6 +102,10 @@ export class MsgUInt32 extends MsgValue {
         super(value);
     }
 
+    static decode(buffer: Buffer, offset: number) {
+        return new MsgUInt32(buffer.readUInt32BE(offset + 1));
+    }
+
     writeMsgpackTo(buffer: Buffer, offset?: number) {
         buffer[offset] = 0xce;
         buffer.writeUInt32BE(+this.value, offset + 1);
@@ -118,6 +118,10 @@ export class MsgFloat32 extends MsgValue {
         super(value);
     }
 
+    static decode(buffer: Buffer, offset: number) {
+        return new MsgFloat32(buffer.readFloatBE(offset + 1));
+    }
+
     writeMsgpackTo(buffer: Buffer, offset?: number) {
         buffer[offset] = 0xca;
         buffer.writeFloatBE(+this.value, offset + 1);
@@ -128,6 +132,10 @@ export class MsgFloat32 extends MsgValue {
 export class MsgFloat64 extends MsgValue {
     constructor(value: number) {
         super(value);
+    }
+
+    static decode(buffer: Buffer, offset: number) {
+        return new MsgFloat32(buffer.readDoubleBE(offset + 1));
     }
 
     writeMsgpackTo(buffer: Buffer, offset?: number) {
