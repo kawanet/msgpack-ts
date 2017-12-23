@@ -1,5 +1,7 @@
 import {Msg, MsgInterface} from "msg-interface";
 
+import {MsgValue} from "./msg-value";
+
 export class MsgMap extends Msg {
     constructor(value?: object) {
         super();
@@ -7,7 +9,7 @@ export class MsgMap extends Msg {
         const array = this.array = [];
         Object.keys(value).forEach((key) => {
             const val = value[key];
-            array.push(encodeMsgpack(key), encodeMsgpack(val));
+            array.push(MsgValue.encode(key), MsgValue.encode(val));
         });
         this.msgpackLength = array.reduce((total: number, msg: MsgInterface) => total + msg.msgpackLength, 5);
     }
@@ -24,7 +26,7 @@ export class MsgMap extends Msg {
         return obj;
     }
 
-    writeMsgpackTo(buffer: Buffer, offset?: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number) {
         const length = this.array.length / 2;
         const C = (length < 16) ? MsgFixMap : (length < 65536) ? MsgMap16 : MsgMap32;
         return C.prototype.writeMsgpackTo.call(this, buffer, offset);
@@ -39,7 +41,7 @@ export class MsgFixMap extends MsgMap {
         return read(new MsgFixMap(), buffer, offset, offset + 1, length);
     }
 
-    writeMsgpackTo(buffer: Buffer, offset?: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number) {
         const length = this.array.length / 2;
         buffer[offset] = 0x80 | length;
         const pos = offset + 1;
@@ -53,7 +55,7 @@ export class MsgMap16 extends MsgMap {
         return read(new MsgMap16(), buffer, offset, offset + 3, length);
     }
 
-    writeMsgpackTo(buffer: Buffer, offset?: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number) {
         const length = this.array.length / 2;
         buffer[offset] = 0xde;
         const pos = buffer.writeUInt16BE(length, offset + 1);
@@ -67,7 +69,7 @@ export class MsgMap32 extends MsgMap {
         return read(new MsgMap32(), buffer, offset, offset + 5, length);
     }
 
-    writeMsgpackTo(buffer: Buffer, offset?: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number) {
         const length = this.array.length / 2;
         buffer[offset] = 0xdf;
         const pos = buffer.writeUInt32BE(length, offset + 1);
@@ -79,9 +81,9 @@ function read(self: MsgMap, buffer: Buffer, offset: number, start: number, lengt
     const array = self.array;
 
     for (let i = 0; i < length; i++) {
-        const key = decodeMsgpack(buffer, start);
+        const key = MsgValue.decode(buffer, start);
         start += key.msgpackLength;
-        const val = decodeMsgpack(buffer, start);
+        const val = MsgValue.decode(buffer, start);
         start += val.msgpackLength;
         array.push(key, val);
     }
@@ -94,6 +96,3 @@ function read(self: MsgMap, buffer: Buffer, offset: number, start: number, lengt
 function write(self: MsgMap, buffer: Buffer, offset: number, start: number) {
     return self.array.reduce((pos, msg) => pos + msg.writeMsgpackTo(buffer, pos), start) - offset;
 }
-
-import {encodeMsgpack} from "./encode";
-import {decodeMsgpack} from "./decode";

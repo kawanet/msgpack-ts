@@ -7,7 +7,7 @@ export class MsgBinary extends MsgValue {
         this.msgpackLength = (length < 256) ? 2 + length : (length < 65536) ? 3 + length : 5 + length;
     }
 
-    writeMsgpackTo(buffer: Buffer, offset?: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number) {
         const value = this.value;
         const length = value.length;
         if (length < 256) {

@@ -1,31 +1,25 @@
 "use strict";
 
-import {encodeMsgpack} from "./encode";
-import {decodeMsgpack} from "./decode";
+import {MsgValue} from "./msg-value";
 
-exportAll(require("./msg-array"));
-exportAll(require("./msg-binary"));
-exportAll(require("./msg-boolean"));
-exportAll(require("./msg-map"));
-exportAll(require("./msg-nil"));
-exportAll(require("./msg-number"));
-exportAll(require("./msg-string"));
-exportAll(require("./msg-value"));
-
-function exportAll(obj) {
-    for (const key in obj) {
-        exports[key] = obj[key];
-    }
-}
+export * from "./msg-array";
+export * from "./msg-binary";
+export * from "./msg-boolean";
+export * from "./msg-map";
+export * from "./msg-nil";
+export * from "./msg-number";
+export * from "./msg-string";
+export * from "./msg-value";
 
 export function encode(value: any): Buffer {
-    const msg = encodeMsgpack(value);
+    const msg = MsgValue.encode(value);
     if (!msg) return;
     return msg.toMsgpack();
 }
 
-export function decode(buffer: Buffer): any {
-    const msg = decodeMsgpack(buffer);
+export function decode(buffer: Buffer, offset?: number): any {
+    offset = +offset || 0;
+    const msg = MsgValue.decode(buffer, offset);
     if (!msg) return;
     return msg.valueOf();
 }

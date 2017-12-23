@@ -16,17 +16,13 @@ const UINT32_NEXT = 0x100000000;
 
 type Encoder = (value: any) => MsgInterface;
 
-const typeMap = {
-    boolean: MsgBoolean.encode,
-    number: encodeNumber,
-    object: encodeObject,
-    string: (value: string) => new MsgString(value),
-};
-
-export function encodeMsgpack(value: any): MsgInterface {
-    const type = typeof value;
-    const f: Encoder = typeMap[type];
-    if (f) return f(value);
+export function initEncoders(): { [type: string]: Encoder; } {
+    return {
+        boolean: MsgBoolean.encode,
+        number: encodeNumber,
+        object: encodeObject,
+        string: (value: string) => new MsgString(value),
+    };
 }
 
 function encodeNumber(value: number): MsgInterface {

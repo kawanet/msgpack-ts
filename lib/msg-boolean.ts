@@ -1,5 +1,6 @@
-import {MsgValue} from "./msg-value";
 import {MsgInterface} from "msg-interface";
+
+import {MsgValue} from "./msg-value";
 
 export class MsgBoolean extends MsgValue {
     constructor(value: boolean) {
@@ -15,7 +16,7 @@ export class MsgBoolean extends MsgValue {
         return new MsgBoolean(value);
     }
 
-    writeMsgpackTo(buffer: Buffer, offset?: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number) {
         buffer[offset] = this.value ? 0xc3 : 0xc2;
         return 1;
     }
