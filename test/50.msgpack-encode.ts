@@ -30,7 +30,7 @@ describe(TITLE, () => {
             let title = type + ": " + exam.stringify(type);
             it(title, () => {
                 const value = exam.getValue(type);
-                const buffer: Buffer = msgpack.encode(value);
+                const buffer = msgpack.encode(value);
                 const hint = exam.stringify(0) + " != " + binaryToHex(buffer);
                 assert(exam.matchMsgpack(buffer), hint);
             });
