@@ -1,3 +1,4 @@
+*.browserify.js
 *~
 .DS_Store
 .Thumbs
