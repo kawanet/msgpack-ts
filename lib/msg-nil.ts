@@ -5,7 +5,7 @@ export class MsgNil extends MsgValue {
         super(null);
     }
 
-    static decode(buffer: Buffer, offset: number) {
+    static from(buffer: Buffer, offset: number) {
         return new MsgNil();
     }
 

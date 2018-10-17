@@ -7,7 +7,7 @@ export class MsgBoolean extends MsgValue {
         super(value);
     }
 
-    static decode(buffer: Buffer, offset?: number) {
+    static from(buffer: Buffer, offset?: number) {
         const lsb = buffer[offset] & 1;
         return new MsgBoolean(!!lsb);
     }

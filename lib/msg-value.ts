@@ -6,14 +6,14 @@ export abstract class MsgValue extends Msg {
         this.value = value;
     }
 
-    static decode(buffer: Buffer, offset?: number): MsgInterface {
+    static parse(buffer: Buffer, offset?: number): MsgInterface {
         offset = +offset || 0;
         const token = buffer[offset];
         const f = decoders[token];
         if (f) return f(buffer, offset);
     }
 
-    static encode(value: any): MsgInterface {
+    static fromAny(value: any): MsgInterface {
         const type = typeof value;
         const f = encoders[type];
         if (f) return f(value);

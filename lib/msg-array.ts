@@ -6,7 +6,7 @@ export class MsgArray extends Msg {
     constructor(value?: any[]) {
         super();
         if (!value) value = [];
-        const array = this.array = [].map.call(value, (item) => MsgValue.encode(item));
+        const array = this.array = [].map.call(value, (item) => MsgValue.fromAny(item));
         this.msgpackLength = array.reduce((total: number, msg: MsgInterface) => total + msg.msgpackLength, 5);
     }
 
@@ -25,7 +25,7 @@ export class MsgArray extends Msg {
 
 export class MsgFixArray extends MsgArray {
 
-    static decode(buffer: Buffer, offset: number) {
+    static parse(buffer: Buffer, offset: number) {
         const length = buffer[offset] & 0x0f;
         return read(new MsgFixArray(), buffer, offset, offset + 1, length);
     }
@@ -38,7 +38,7 @@ export class MsgFixArray extends MsgArray {
 
 export class MsgArray16 extends MsgArray {
 
-    static decode(buffer: Buffer, offset: number) {
+    static parse(buffer: Buffer, offset: number) {
         const length = buffer.readUInt16BE(offset + 1);
         return read(new MsgArray16(), buffer, offset, offset + 3, length);
     }
@@ -52,7 +52,7 @@ export class MsgArray16 extends MsgArray {
 
 export class MsgArray32 extends MsgArray {
 
-    static decode(buffer: Buffer, offset: number) {
+    static parse(buffer: Buffer, offset: number) {
         const length = buffer.readUInt32BE(offset + 1);
         return read(new MsgArray32(), buffer, offset, offset + 5, length);
     }
@@ -66,7 +66,7 @@ export class MsgArray32 extends MsgArray {
 
 function read(self: MsgArray, buffer: Buffer, offset: number, start: number, length: number) {
     for (let i = 0; i < length; i++) {
-        const msg = self.array[i] = MsgValue.decode(buffer, start);
+        const msg = self.array[i] = MsgValue.parse(buffer, start);
         start += msg.msgpackLength;
     }
 

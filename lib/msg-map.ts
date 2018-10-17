@@ -9,7 +9,7 @@ export class MsgMap extends Msg {
         const array = this.array = [];
         Object.keys(value).forEach((key) => {
             const val = value[key];
-            array.push(MsgValue.encode(key), MsgValue.encode(val));
+            array.push(MsgValue.fromAny(key), MsgValue.fromAny(val));
         });
         this.msgpackLength = array.reduce((total: number, msg: MsgInterface) => total + msg.msgpackLength, 5);
     }
@@ -36,7 +36,7 @@ export class MsgMap extends Msg {
 }
 
 export class MsgFixMap extends MsgMap {
-    static decode(buffer: Buffer, offset: number) {
+    static parse(buffer: Buffer, offset: number) {
         const length = buffer[offset] & 0x0f;
         return read(new MsgFixMap(), buffer, offset, offset + 1, length);
     }
@@ -50,7 +50,7 @@ export class MsgFixMap extends MsgMap {
 }
 
 export class MsgMap16 extends MsgMap {
-    static decode(buffer: Buffer, offset: number) {
+    static parse(buffer: Buffer, offset: number) {
         const length = buffer.readUInt16BE(offset + 1);
         return read(new MsgMap16(), buffer, offset, offset + 3, length);
     }
@@ -64,7 +64,7 @@ export class MsgMap16 extends MsgMap {
 }
 
 export class MsgMap32 extends MsgMap {
-    static decode(buffer: Buffer, offset: number) {
+    static parse(buffer: Buffer, offset: number) {
         const length = buffer.readUInt32BE(offset + 1);
         return read(new MsgMap32(), buffer, offset, offset + 5, length);
     }
@@ -81,9 +81,9 @@ function read(self: MsgMap, buffer: Buffer, offset: number, start: number, lengt
     const array = self.array;
 
     for (let i = 0; i < length; i++) {
-        const key = MsgValue.decode(buffer, start);
+        const key = MsgValue.parse(buffer, start);
         start += key.msgpackLength;
-        const val = MsgValue.decode(buffer, start);
+        const val = MsgValue.parse(buffer, start);
         start += val.msgpackLength;
         array.push(key, val);
     }

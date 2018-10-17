@@ -27,7 +27,7 @@ export class MsgFixString extends MsgValue {
         this.msgpackLength = 1 + value.length * 3;
     }
 
-    static decode(buffer: Buffer, offset: number) {
+    static parse(buffer: Buffer, offset: number) {
         const length = buffer[offset] & 0x1f;
         const start = offset + 1;
         const end = start + length;
@@ -52,7 +52,7 @@ export class MsgString8 extends MsgValue {
         this.msgpackLength = 2 + value.length * 3;
     }
 
-    static decode(buffer: Buffer, offset: number) {
+    static parse(buffer: Buffer, offset: number) {
         const length = buffer.readUInt8(offset + 1);
         const start = offset + 2;
         const end = start + length;
@@ -78,7 +78,7 @@ export class MsgString16 extends MsgValue {
         this.msgpackLength = 3 + value.length * 3;
     }
 
-    static decode(buffer: Buffer, offset: number) {
+    static parse(buffer: Buffer, offset: number) {
         const length = buffer.readUInt16BE(offset + 1);
         const start = offset + 3;
         const end = start + length;
@@ -104,7 +104,7 @@ export class MsgString32 extends MsgValue {
         this.msgpackLength = 5 + value.length * 3;
     }
 
-    static decode(buffer: Buffer, offset: number) {
+    static parse(buffer: Buffer, offset: number) {
         const length = buffer.readUInt32BE(offset + 1);
         const start = offset + 5;
         const end = start + length;
