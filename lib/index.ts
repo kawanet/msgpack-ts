@@ -1,5 +1,7 @@
 "use strict";
 
+import {msgToBuffer} from "msg-interface";
+
 import {MsgValue} from "./msg-value";
 
 export * from "./msg-array";
@@ -14,7 +16,7 @@ export * from "./msg-value";
 export function encode(value: any): Buffer {
     const msg = MsgValue.fromAny(value);
     if (!msg) return;
-    return msg.toMsgpack();
+    return msgToBuffer(msg);
 }
 
 export function decode(buffer: Buffer, offset?: number): any {
