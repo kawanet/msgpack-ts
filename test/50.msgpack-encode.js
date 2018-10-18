@@ -4,6 +4,7 @@ var assert = require("assert");
 var msgpack = require("../");
 var msgpack_test_js_1 = require("msgpack-test-js");
 var TITLE = __filename.split("/").pop();
+var atos = function (array) { return [].map.call(array, function (v) { return (v > 15 ? "" : "0") + v.toString(16); }).join("-"); };
 // set 1 for types to run test
 var TEST_TYPES = {
     array: 1,
@@ -26,17 +27,9 @@ describe(TITLE, function () {
             it(title, function () {
                 var value = exam.getValue(type);
                 var buffer = msgpack.encode(value);
-                var hint = exam.stringify(0) + " != " + binaryToHex(buffer);
+                var hint = exam.stringify(0) + " != " + atos(buffer);
                 assert(exam.matchMsgpack(buffer), hint);
             });
         });
     });
 });
-function binaryToHex(buffer) {
-    if (!buffer)
-        return buffer + "";
-    return [].map.call(buffer, toHex).join("-");
-}
-function toHex(v) {
-    return (v > 15 ? "" : "0") + v.toString(16);
-}
