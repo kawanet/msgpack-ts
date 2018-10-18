@@ -2,7 +2,7 @@ import {Msg, MsgInterface} from "msg-interface";
 
 export class MsgMap extends Msg {
     msgpackLength = 5;
-    array = [] as MsgInterface[];
+    protected array = [] as MsgInterface[];
 
     set(key: MsgInterface, value: MsgInterface) {
         this.array.push(key, value);
@@ -35,7 +35,7 @@ export class MsgFixMap extends MsgMap {
         const length = this.array.length / 2;
         buffer[offset] = 0x80 | length;
         const pos = offset + 1;
-        return write(this, buffer, offset, pos);
+        return write(this.array, buffer, offset, pos);
     }
 }
 
@@ -46,7 +46,7 @@ export class MsgMap16 extends MsgMap {
         const length = this.array.length / 2;
         buffer[offset] = 0xde;
         const pos = buffer.writeUInt16BE(length, offset + 1);
-        return write(this, buffer, offset, pos);
+        return write(this.array, buffer, offset, pos);
     }
 }
 
@@ -55,10 +55,10 @@ export class MsgMap32 extends MsgMap {
         const length = this.array.length / 2;
         buffer[offset] = 0xdf;
         const pos = buffer.writeUInt32BE(length, offset + 1);
-        return write(this, buffer, offset, pos);
+        return write(this.array, buffer, offset, pos);
     }
 }
 
-function write(self: MsgMap, buffer: Buffer, offset: number, start: number): number {
-    return self.array.reduce((pos, msg) => pos + msg.writeMsgpackTo(buffer, pos), start) - offset;
+function write(array: MsgInterface[], buffer: Buffer, offset: number, start: number): number {
+    return array.reduce((pos, msg) => pos + msg.writeMsgpackTo(buffer, pos), start) - offset;
 }

@@ -1,16 +1,9 @@
-import {Msg, MsgInterface} from "msg-interface";
+import {Msg} from "msg-interface";
 
 export abstract class MsgValue extends Msg {
     protected constructor(value?: any) {
         super();
         this.value = value;
-    }
-
-    static parse(buffer: Buffer, offset?: number): MsgInterface {
-        offset = 0 | offset as number;
-        const token = buffer[offset];
-        const f = decoders[token];
-        return f && f(buffer, offset);
     }
 
     valueOf() {
@@ -21,7 +14,3 @@ export abstract class MsgValue extends Msg {
 }
 
 MsgValue.prototype.value = void 0;
-
-import {initDecoders} from "./decoder";
-
-const decoders = initDecoders();

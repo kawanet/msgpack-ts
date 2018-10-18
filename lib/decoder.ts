@@ -7,11 +7,19 @@ import {MsgBoolean} from "./msg-boolean";
 import {MsgMap} from "./msg-map";
 import {MsgNil} from "./msg-nil";
 import {MsgString} from "./msg-string";
-import {MsgValue} from "./msg-value";
 
 type Decoder = (buffer: Buffer, offset: number) => MsgInterface;
 
 const UTF8 = "utf8";
+
+const decoders = initDecoders();
+
+export function decodeMsg(buffer: Buffer, offset?: number): MsgInterface {
+    offset = 0 | offset as number;
+    const token = buffer[offset];
+    const f = decoders[token];
+    return f && f(buffer, offset);
+}
 
 export function initDecoders(): Decoder[] {
     const A = require("./msg-array");
@@ -94,28 +102,24 @@ function decodeArray(msg: MsgArray, buffer: Buffer, offset: number, skip: number
     let start = offset + skip;
 
     for (let i = 0; i < length; i++) {
-        const item = msg.array[i] = MsgValue.parse(buffer, start);
+        const item = decodeMsg(buffer, start);
         start += item.msgpackLength;
+        msg.add(item);
     }
-
-    msg.msgpackLength = start - offset;
 
     return msg;
 }
 
 function decodeMap(msg: MsgMap, buffer: Buffer, offset: number, skip: number, length: number) {
-    const array = msg.array;
     let start = offset + skip;
 
     for (let i = 0; i < length; i++) {
-        const key = MsgValue.parse(buffer, start);
+        const key = decodeMsg(buffer, start);
         start += key.msgpackLength;
-        const val = MsgValue.parse(buffer, start);
+        const val = decodeMsg(buffer, start);
         start += val.msgpackLength;
-        array.push(key, val);
+        msg.set(key, val);
     }
-
-    msg.msgpackLength = start - offset;
 
     return msg;
 }

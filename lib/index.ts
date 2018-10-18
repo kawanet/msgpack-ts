@@ -2,7 +2,7 @@
 
 import {msgToBuffer} from "msg-interface";
 
-import {MsgValue} from "./msg-value";
+import {decodeMsg} from "./decoder";
 import {encodeMsg} from "./encoder";
 
 export * from "./msg-array";
@@ -20,7 +20,6 @@ export function encode(value: any): Buffer {
 }
 
 export function decode(buffer: Buffer, offset?: number): any {
-    const msg = MsgValue.parse(buffer, offset);
-    if (!msg) return;
-    return msg.valueOf();
+    const msg = decodeMsg(buffer, offset);
+    return msg && msg.valueOf();
 }
