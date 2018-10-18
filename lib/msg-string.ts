@@ -1,7 +1,5 @@
 import {MsgValue} from "./msg-value";
 
-const UTF8 = "utf8";
-
 export class MsgString extends MsgValue {
     constructor(value: string) {
         super(value);
@@ -21,16 +19,6 @@ export class MsgString extends MsgValue {
 }
 
 export class MsgFixString extends MsgString {
-    static parse(buffer: Buffer, offset: number) {
-        const length = buffer[offset] & 0x1f;
-        const start = offset + 1;
-        const end = start + length;
-        const str = buffer.toString(UTF8, start, end);
-        const msg = new MsgFixString(str);
-        msg.msgpackLength = end - offset;
-        return msg;
-    }
-
     writeMsgpackTo(buffer: Buffer, offset: number) {
         const length = buffer.write(this.value, offset + 1);
         buffer[offset] = 0xa0 | length;
@@ -40,16 +28,6 @@ export class MsgFixString extends MsgString {
 }
 
 export class MsgString8 extends MsgString {
-    static parse(buffer: Buffer, offset: number) {
-        const length = buffer.readUInt8(offset + 1);
-        const start = offset + 2;
-        const end = start + length;
-        const str = buffer.toString(UTF8, start, end);
-        const msg = new MsgString8(str);
-        msg.msgpackLength = end - offset;
-        return msg;
-    }
-
     writeMsgpackTo(buffer: Buffer, offset: number) {
         buffer[offset] = 0xd9;
         const length = buffer.write(this.value, offset + 2);
@@ -60,16 +38,6 @@ export class MsgString8 extends MsgString {
 }
 
 export class MsgString16 extends MsgString {
-    static parse(buffer: Buffer, offset: number) {
-        const length = buffer.readUInt16BE(offset + 1);
-        const start = offset + 3;
-        const end = start + length;
-        const str = buffer.toString(UTF8, start, end);
-        const msg = new MsgString16(str);
-        msg.msgpackLength = end - offset;
-        return msg;
-    }
-
     writeMsgpackTo(buffer: Buffer, offset: number) {
         buffer[offset] = 0xda;
         const length = buffer.write(this.value, offset + 3);
@@ -80,16 +48,6 @@ export class MsgString16 extends MsgString {
 }
 
 export class MsgString32 extends MsgString {
-    static parse(buffer: Buffer, offset: number) {
-        const length = buffer.readUInt32BE(offset + 1);
-        const start = offset + 5;
-        const end = start + length;
-        const str = buffer.toString(UTF8, start, end);
-        const msg = new MsgString32(str);
-        msg.msgpackLength = end - offset;
-        return msg;
-    }
-
     writeMsgpackTo(buffer: Buffer, offset: number) {
         buffer[offset] = 0xdb;
         const length = buffer.write(this.value, offset + 5);
