@@ -1,10 +1,17 @@
-import {MsgValue} from "./msg-value";
+import {MsgInterface} from "msg-interface";
 
-export class MsgBinary extends MsgValue {
+export class MsgBinary implements MsgInterface {
+    msgpackLength: number;
+    protected value: Buffer;
+
     constructor(value: Buffer) {
-        super(value);
+        this.value = value;
         const length = value.length;
         this.msgpackLength = (length < 256) ? 2 + length : (length < 65536) ? 3 + length : 5 + length;
+    }
+
+    valueOf(): Buffer {
+        return this.value;
     }
 
     writeMsgpackTo(buffer: Buffer, offset: number) {
@@ -23,6 +30,4 @@ export class MsgBinary extends MsgValue {
         offset += value.copy(buffer, offset);
         return offset;
     }
-
-    value: Buffer;
 }

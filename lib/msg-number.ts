@@ -1,8 +1,17 @@
-import {MsgValue} from "./msg-value";
+import {MsgInterface} from "msg-interface";
 
-abstract class MsgNumber extends MsgValue {
+abstract class MsgNumber implements MsgInterface {
+    msgpackLength: number;
+    protected value: number;
+
+    abstract writeMsgpackTo(buffer: Buffer, offset?: number): number;
+
     constructor(value: number) {
-        super(value);
+        this.value = +value;
+    }
+
+    valueOf(): number {
+        return this.value;
     }
 }
 

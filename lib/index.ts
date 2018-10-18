@@ -12,7 +12,6 @@ export * from "./msg-map";
 export * from "./msg-nil";
 export * from "./msg-number";
 export * from "./msg-string";
-export * from "./msg-value";
 
 export function encode(value: any): Buffer {
     const msg = encodeMsg(value);

@@ -1,11 +1,18 @@
-import {MsgValue} from "./msg-value";
+import {MsgInterface} from "msg-interface";
 
-export class MsgString extends MsgValue {
+export class MsgString implements MsgInterface {
+    msgpackLength: number;
+    protected value: string;
+
     constructor(value: string) {
-        super(value);
+        this.value = value;
 
         // maximum byte length
         this.msgpackLength = 5 + value.length * 3;
+    }
+
+    valueOf(): string {
+        return this.value;
     }
 
     writeMsgpackTo(buffer: Buffer, offset: number) {

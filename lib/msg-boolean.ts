@@ -1,8 +1,15 @@
-import {MsgValue} from "./msg-value";
+import {MsgInterface} from "msg-interface";
 
-export class MsgBoolean extends MsgValue {
+export class MsgBoolean implements MsgInterface {
+    msgpackLength: number;
+    protected value: boolean;
+
     constructor(value: boolean) {
-        super(!!value);
+        this.value = !!value;
+    }
+
+    valueOf(): boolean {
+        return this.value;
     }
 
     writeMsgpackTo(buffer: Buffer, offset: number) {

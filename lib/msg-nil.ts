@@ -1,13 +1,15 @@
-import {MsgValue} from "./msg-value";
+import {MsgInterface} from "msg-interface";
 
-export class MsgNil extends MsgValue {
-    constructor() {
-        super(null);
-    }
+export class MsgNil implements MsgInterface {
+    msgpackLength: number;
 
     writeMsgpackTo(buffer: Buffer, offset: number) {
         buffer[offset] = 0xc0;
         return 1;
+    }
+
+    valueOf(): null {
+        return null;
     }
 }
 
