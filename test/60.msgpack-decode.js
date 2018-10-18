@@ -8,7 +8,7 @@ var atos = function (array) { return [].map.call(array, function (v) { return (v
 // set 1 for types to run test
 var TEST_TYPES = {
     array: 1,
-    bignum: 0,
+    bignum: 1,
     binary: 1,
     bool: 1,
     ext: 1,
