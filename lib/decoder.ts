@@ -5,6 +5,7 @@ import {MsgBinary} from "./msg-binary";
 import {MsgValue} from "./msg-value";
 import {MsgArray} from "./msg-array";
 import {MsgString} from "./msg-string";
+import {MsgMap} from "./msg-map";
 
 type Decoder = (buffer: Buffer, offset: number) => MsgInterface;
 
@@ -26,10 +27,11 @@ export function initDecoders(): Decoder[] {
 
     const decodeFixString = (buffer: Buffer, offset: number) => decodeString(buffer, offset, 1, buffer[offset] & 0x1f, str => new STR.MsgFixString(str));
     const decodeFixArray = (buffer: Buffer, offset: number) => decodeArray(new ARR.MsgFixArray(), buffer, offset, 1, buffer[offset] & 0x0f);
+    const decodeFixMap = (buffer: Buffer, offset: number) => decodeMap(new MAP.MsgFixMap(), buffer, offset, 1, buffer[offset] & 0x0f);
 
     let i;
     for (i = 0x00; i < 0x80; i++) decoders[i] = decodeFixInt;
-    for (i = 0x80; i < 0x90; i++) decoders[i] = MAP.MsgFixMap.parse;
+    for (i = 0x80; i < 0x90; i++) decoders[i] = decodeFixMap;
     for (i = 0x90; i < 0xa0; i++) decoders[i] = decodeFixArray;
     for (i = 0xa0; i < 0xc0; i++) decoders[i] = decodeFixString;
 
@@ -65,8 +67,8 @@ export function initDecoders(): Decoder[] {
     decoders[0xdc] = (buffer: Buffer, offset: number) => decodeArray(new ARR.MsgArray16(), buffer, offset, 3, buffer.readUInt16BE(offset + 1));
     decoders[0xdd] = (buffer: Buffer, offset: number) => decodeArray(new ARR.MsgArray32(), buffer, offset, 5, buffer.readUInt32BE(offset + 1));
 
-    decoders[0xde] = MAP.MsgMap16.parse;
-    decoders[0xdf] = MAP.MsgMap32.parse;
+    decoders[0xde] = (buffer: Buffer, offset: number) => decodeMap(new MAP.MsgMap16(), buffer, offset, 3, buffer.readUInt16BE(offset + 1));
+    decoders[0xdf] = (buffer: Buffer, offset: number) => decodeMap(new MAP.MsgMap32(), buffer, offset, 5, buffer.readUInt32BE(offset + 1));
 
     for (i = 0xe0; i < 0x100; i++) decoders[i] = decodeFixInt;
 
@@ -88,17 +90,34 @@ function decodeString(buffer: Buffer, offset: number, skip: number, length: numb
     return msg;
 }
 
-function decodeArray(self: MsgArray, buffer: Buffer, offset: number, skip: number, length: number) {
+function decodeArray(msg: MsgArray, buffer: Buffer, offset: number, skip: number, length: number) {
     let start = offset + skip;
 
     for (let i = 0; i < length; i++) {
-        const msg = self.array[i] = MsgValue.parse(buffer, start);
-        start += msg.msgpackLength;
+        const item = msg.array[i] = MsgValue.parse(buffer, start);
+        start += item.msgpackLength;
     }
 
-    self.msgpackLength = start - offset;
+    msg.msgpackLength = start - offset;
 
-    return self;
+    return msg;
+}
+
+function decodeMap(msg: MsgMap, buffer: Buffer, offset: number, skip: number, length: number) {
+    const array = msg.array;
+    let start = offset + skip;
+
+    for (let i = 0; i < length; i++) {
+        const key = MsgValue.parse(buffer, start);
+        start += key.msgpackLength;
+        const val = MsgValue.parse(buffer, start);
+        start += val.msgpackLength;
+        array.push(key, val);
+    }
+
+    msg.msgpackLength = start - offset;
+
+    return msg;
 }
 
 function decodeBinary(buffer: Buffer, offset: number, skip: number, length: number) {
