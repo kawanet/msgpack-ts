@@ -24,8 +24,11 @@ export class MsgFixArray extends MsgArray {
     msgpackLength = 1;
 
     writeMsgpackTo(buffer: Buffer, offset: number): number {
-        buffer[offset] = 0x90 | this.array.length;
-        return write(this.array, buffer, offset, offset + 1);
+        const length = this.array.length;
+        buffer[offset] = 0x90 | length;
+        let pos = offset + 1;
+        this.array.forEach(msg => pos += msg.writeMsgpackTo(buffer, pos));
+        return pos - offset;
     }
 }
 
@@ -34,19 +37,17 @@ export class MsgArray16 extends MsgArray {
 
     writeMsgpackTo(buffer: Buffer, offset: number): number {
         buffer[offset] = 0xdc;
-        const pos = buffer.writeUInt16BE(this.array.length, offset + 1);
-        return write(this.array, buffer, offset, pos);
+        let pos = buffer.writeUInt16BE(this.array.length, offset + 1);
+        this.array.forEach(msg => pos += msg.writeMsgpackTo(buffer, pos));
+        return pos - offset;
     }
 }
 
 export class MsgArray32 extends MsgArray {
     writeMsgpackTo(buffer: Buffer, offset: number): number {
         buffer[offset] = 0xdd;
-        const pos = buffer.writeUInt32BE(this.array.length, offset + 1);
-        return write(this.array, buffer, offset, pos);
+        let pos = buffer.writeUInt32BE(this.array.length, offset + 1);
+        this.array.forEach(msg => pos += msg.writeMsgpackTo(buffer, pos));
+        return pos - offset;
     }
-}
-
-function write(array: MsgInterface[], buffer: Buffer, offset: number, start: number): number {
-    return array.reduce((pos, msg) => pos + msg.writeMsgpackTo(buffer, pos), start) - offset;
 }
