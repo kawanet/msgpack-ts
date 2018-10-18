@@ -1,6 +1,6 @@
 import {Msg, MsgInterface} from "msg-interface";
 
-export class MsgArray extends Msg {
+export abstract class MsgArray extends Msg {
     msgpackLength = 5;
     protected array = [] as MsgInterface[];
 
@@ -11,12 +11,6 @@ export class MsgArray extends Msg {
 
     valueOf() {
         return this.array.map((msg) => msg.valueOf());
-    }
-
-    writeMsgpackTo(buffer: Buffer, offset: number): number {
-        const length = this.array.length;
-        const C = (length < 16) ? MsgFixArray : (length < 65536) ? MsgArray16 : MsgArray32;
-        return C.prototype.writeMsgpackTo.call(this, buffer, offset);
     }
 }
 

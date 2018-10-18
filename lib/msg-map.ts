@@ -1,6 +1,6 @@
 import {Msg, MsgInterface} from "msg-interface";
 
-export class MsgMap extends Msg {
+export abstract class MsgMap extends Msg {
     msgpackLength = 5;
     protected array = [] as MsgInterface[];
 
@@ -19,12 +19,6 @@ export class MsgMap extends Msg {
             obj[key.valueOf() as string] = val.valueOf();
         }
         return obj;
-    }
-
-    writeMsgpackTo(buffer: Buffer, offset: number): number {
-        const length = this.array.length / 2;
-        const C = (length < 16) ? MsgFixMap : (length < 65536) ? MsgMap16 : MsgMap32;
-        return C.prototype.writeMsgpackTo.call(this, buffer, offset);
     }
 }
 

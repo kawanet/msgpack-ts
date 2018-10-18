@@ -3,10 +3,10 @@
 import {isMsg, MsgInterface} from "msg-interface";
 import {MsgInt64, MsgUInt64} from "msg-int64";
 
-import {MsgArray} from "./msg-array";
+import {MsgArray16, MsgArray32, MsgFixArray} from "./msg-array";
 import {MsgBinary} from "./msg-binary";
 import {MsgBoolean} from "./msg-boolean";
-import {MsgMap} from "./msg-map";
+import {MsgFixMap, MsgMap16, MsgMap32} from "./msg-map";
 import * as N from "./msg-number";
 import {MsgNil} from "./msg-nil";
 import {MsgString} from "./msg-string";
@@ -68,6 +68,8 @@ function encodeObject(value: object): MsgInterface {
     }
 
     if (Array.isArray(value)) {
+        const length = value.length;
+        const MsgArray = (length < 16) ? MsgFixArray : (length < 65536) ? MsgArray16 : MsgArray32;
         const msg = new MsgArray();
         value.forEach(item => msg.add(encodeMsg(item)));
         return msg;
@@ -85,7 +87,12 @@ function encodeObject(value: object): MsgInterface {
         return new MsgUInt64(value.toBuffer());
     }
 
-    const msg = new MsgMap();
-    Object.keys(value).forEach(key => msg.set(encodeMsg(key), encodeMsg((value as any)[key])));
-    return msg;
+    {
+        const array = Object.keys(value);
+        const length = array.length / 2;
+        const MsgMap = (length < 16) ? MsgFixMap : (length < 65536) ? MsgMap16 : MsgMap32;
+        const msg = new MsgMap();
+        array.forEach(key => msg.set(encodeMsg(key), encodeMsg((value as any)[key])));
+        return msg;
+    }
 }
