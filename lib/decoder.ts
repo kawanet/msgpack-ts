@@ -21,7 +21,7 @@ export function decodeMsg(buffer: Buffer, offset?: number): MsgInterface {
     return f && f(buffer, offset);
 }
 
-export function initDecoders(): Decoder[] {
+function initDecoders(): Decoder[] {
     const A = require("./msg-array");
     const M = require("./msg-map");
     const N = require("./msg-number");
