@@ -4,6 +4,7 @@ import {MsgInt64, MsgUInt64} from "msg-int64";
 import {MsgBinary} from "./msg-binary";
 import {MsgValue} from "./msg-value";
 import {MsgArray} from "./msg-array";
+import {MsgString} from "./msg-string";
 
 type Decoder = (buffer: Buffer, offset: number) => MsgInterface;
 
@@ -23,6 +24,7 @@ export function initDecoders(): Decoder[] {
     decoders[0xc2] = (_buffer: Buffer, _offset: number) => new BOO.MsgBoolean(false);
     decoders[0xc3] = (_buffer: Buffer, _offset: number) => new BOO.MsgBoolean(true);
 
+    const decodeFixString = (buffer: Buffer, offset: number) => decodeString(buffer, offset, 1, buffer[offset] & 0x1f, str => new STR.MsgFixString(str));
     const decodeFixArray = (buffer: Buffer, offset: number) => decodeArray(new ARR.MsgFixArray(), buffer, offset, 1, buffer[offset] & 0x0f);
 
     let i;
@@ -56,9 +58,9 @@ export function initDecoders(): Decoder[] {
     decoders[0xd7] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 1, 8);
     decoders[0xd8] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 1, 16);
 
-    decoders[0xd9] = decodeString8;
-    decoders[0xda] = decodeString16;
-    decoders[0xdb] = decodeString32;
+    decoders[0xd9] = (buffer: Buffer, offset: number) => decodeString(buffer, offset, 2, buffer.readUInt8(offset + 1), str => new STR.MsgString8(str));
+    decoders[0xda] = (buffer: Buffer, offset: number) => decodeString(buffer, offset, 3, buffer.readUInt16BE(offset + 1), str => new STR.MsgString16(str));
+    decoders[0xdb] = (buffer: Buffer, offset: number) => decodeString(buffer, offset, 5, buffer.readUInt32BE(offset + 1), str => new STR.MsgString32(str));
 
     decoders[0xdc] = (buffer: Buffer, offset: number) => decodeArray(new ARR.MsgArray16(), buffer, offset, 3, buffer.readUInt16BE(offset + 1));
     decoders[0xdd] = (buffer: Buffer, offset: number) => decodeArray(new ARR.MsgArray32(), buffer, offset, 5, buffer.readUInt32BE(offset + 1));
@@ -75,46 +77,15 @@ export function initDecoders(): Decoder[] {
         if (value > 127) value -= 256;
         return new NUM.MsgFixInt(value);
     }
+}
 
-    function decodeFixString(buffer: Buffer, offset: number) {
-        const length = buffer[offset] & 0x1f;
-        const start = offset + 1;
-        const end = start + length;
-        const str = buffer.toString(UTF8, start, end);
-        const msg = new STR.MsgFixString(str);
-        msg.msgpackLength = end - offset;
-        return msg;
-    }
-
-    function decodeString8(buffer: Buffer, offset: number) {
-        const length = buffer.readUInt8(offset + 1);
-        const start = offset + 2;
-        const end = start + length;
-        const str = buffer.toString(UTF8, start, end);
-        const msg = new STR.MsgString8(str);
-        msg.msgpackLength = end - offset;
-        return msg;
-    }
-
-    function decodeString16(buffer: Buffer, offset: number) {
-        const length = buffer.readUInt16BE(offset + 1);
-        const start = offset + 3;
-        const end = start + length;
-        const str = buffer.toString(UTF8, start, end);
-        const msg = new STR.MsgString16(str);
-        msg.msgpackLength = end - offset;
-        return msg;
-    }
-
-    function decodeString32(buffer: Buffer, offset: number) {
-        const length = buffer.readUInt32BE(offset + 1);
-        const start = offset + 5;
-        const end = start + length;
-        const str = buffer.toString(UTF8, start, end);
-        const msg = new STR.MsgString32(str);
-        msg.msgpackLength = end - offset;
-        return msg;
-    }
+function decodeString(buffer: Buffer, offset: number, skip: number, length: number, create: ((str: string) => MsgString)) {
+    const start = offset + skip;
+    const end = start + length;
+    const str = buffer.toString(UTF8, start, end);
+    const msg = create(str);
+    msg.msgpackLength = end - offset;
+    return msg;
 }
 
 function decodeArray(self: MsgArray, buffer: Buffer, offset: number, skip: number, length: number) {
