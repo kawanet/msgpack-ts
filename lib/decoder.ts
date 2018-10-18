@@ -1,4 +1,5 @@
-import {MsgExt, MsgInterface} from "msg-interface";
+import {MsgExt} from "msg-ext";
+import {MsgInterface} from "msg-interface";
 import {MsgInt64, MsgUInt64} from "msg-int64";
 
 import {MsgArrayInterface} from "./msg-array";
