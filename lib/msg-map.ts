@@ -33,8 +33,11 @@ export class MsgFixMap extends MsgMap {
 
     writeMsgpackTo(buffer: Buffer, offset: number): number {
         const length = this.array.length / 2;
+        if (length > 15) throw new TypeError("Too many items: " + length);
+
         buffer[offset] = 0x80 | length;
         let pos = offset + 1;
+
         this.array.forEach(msg => pos += msg.writeMsgpackTo(buffer, pos));
         return pos - offset;
     }
@@ -45,8 +48,11 @@ export class MsgMap16 extends MsgMap {
 
     writeMsgpackTo(buffer: Buffer, offset: number): number {
         const length = this.array.length / 2;
+        if (length > 65535) throw new TypeError("Too many items: " + length);
+
         buffer[offset] = 0xde;
         let pos = buffer.writeUInt16BE(length, offset + 1);
+
         this.array.forEach(msg => pos += msg.writeMsgpackTo(buffer, pos));
         return pos - offset;
     }
@@ -55,8 +61,10 @@ export class MsgMap16 extends MsgMap {
 export class MsgMap32 extends MsgMap {
     writeMsgpackTo(buffer: Buffer, offset: number): number {
         const length = this.array.length / 2;
+
         buffer[offset] = 0xdf;
         let pos = buffer.writeUInt32BE(length, offset + 1);
+
         this.array.forEach(msg => pos += msg.writeMsgpackTo(buffer, pos));
         return pos - offset;
     }

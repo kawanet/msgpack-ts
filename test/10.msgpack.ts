@@ -136,6 +136,8 @@ describe(TITLE, () => {
         assert(isMsg(msg));
         assert.strictEqual("" + msg, "ABC");
         assert.strictEqual(mtos(msg), "a3-41-42-43");
+
+        assert.throws(() => mtos(new m.MsgFixString("12345678901234567890123456789012")));
     });
 
     it("MsgString8", () => {
