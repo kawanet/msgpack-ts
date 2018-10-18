@@ -1,7 +1,8 @@
 import {MsgInterface} from "msg-interface";
 
 export abstract class MsgMap implements MsgInterface {
-    msgpackLength = 5;
+    msgpackLength: number;
+
     protected array = [] as MsgInterface[];
 
     abstract writeMsgpackTo(buffer: Buffer, offset?: number): number;
@@ -25,8 +26,6 @@ export abstract class MsgMap implements MsgInterface {
 }
 
 export class MsgFixMap extends MsgMap {
-    msgpackLength = 1;
-
     writeMsgpackTo(buffer: Buffer, offset: number): number {
         const length = this.array.length / 2;
         if (length > 15) throw new TypeError("Too many items: " + length);
@@ -40,8 +39,6 @@ export class MsgFixMap extends MsgMap {
 }
 
 export class MsgMap16 extends MsgMap {
-    msgpackLength = 3;
-
     writeMsgpackTo(buffer: Buffer, offset: number): number {
         const length = this.array.length / 2;
         if (length > 65535) throw new TypeError("Too many items: " + length);
@@ -64,4 +61,12 @@ export class MsgMap32 extends MsgMap {
         this.array.forEach(msg => pos += msg.writeMsgpackTo(buffer, pos));
         return pos - offset;
     }
+}
+
+setMsgpackLength(MsgFixMap, 1);
+setMsgpackLength(MsgMap16, 3);
+setMsgpackLength(MsgMap32, 5);
+
+function setMsgpackLength(msgClass: Function, msgpackLength: number) {
+    msgClass.prototype.msgpackLength = msgpackLength;
 }
