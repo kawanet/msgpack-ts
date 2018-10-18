@@ -9,7 +9,7 @@ abstract class MsgMap implements MsgMapInterface {
 
     protected array = [] as MsgInterface[];
 
-    abstract writeMsgpackTo(buffer: Buffer, offset?: number): number;
+    abstract writeMsgpackTo(buffer: Buffer, offset: number): number;
 
     set(key: MsgInterface, value: MsgInterface) {
         this.array.push(key, value);
@@ -31,6 +31,7 @@ abstract class MsgMap implements MsgMapInterface {
 
 export class MsgFixMap extends MsgMap {
     writeMsgpackTo(buffer: Buffer, offset: number): number {
+        offset |= 0;
         const length = this.array.length / 2;
         if (length > 15) throw new TypeError("Too many items: " + length);
 
@@ -44,6 +45,8 @@ export class MsgFixMap extends MsgMap {
 
 export class MsgMap16 extends MsgMap {
     writeMsgpackTo(buffer: Buffer, offset: number): number {
+        offset |= 0;
+
         const length = this.array.length / 2;
         if (length > 65535) throw new TypeError("Too many items: " + length);
 
@@ -59,6 +62,7 @@ export class MsgMap32 extends MsgMap {
     writeMsgpackTo(buffer: Buffer, offset: number): number {
         const length = this.array.length / 2;
 
+        offset |= 0;
         buffer[offset] = 0xdf;
         let pos = buffer.writeUInt32BE(length, offset + 1);
 

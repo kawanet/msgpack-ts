@@ -27,6 +27,8 @@ export class MsgString implements MsgInterface {
 
 export class MsgFixString extends MsgString {
     writeMsgpackTo(buffer: Buffer, offset: number): number {
+        offset |= 0;
+
         const length = buffer.write(this.value, offset + 1);
         if (length > 31) throw new TypeError("Too long string: " + length);
 
@@ -39,7 +41,9 @@ export class MsgFixString extends MsgString {
 
 export class MsgString8 extends MsgString {
     writeMsgpackTo(buffer: Buffer, offset: number): number {
+        offset |= 0;
         buffer[offset] = 0xd9;
+
         const length = buffer.write(this.value, offset + 2);
         if (length > 255) throw new TypeError("Too long string: " + length);
 
@@ -52,7 +56,9 @@ export class MsgString8 extends MsgString {
 
 export class MsgString16 extends MsgString {
     writeMsgpackTo(buffer: Buffer, offset: number): number {
+        offset |= 0;
         buffer[offset] = 0xda;
+
         const length = buffer.write(this.value, offset + 3);
         if (length > 65535) throw new TypeError("Too long string: " + length);
 
@@ -65,7 +71,9 @@ export class MsgString16 extends MsgString {
 
 export class MsgString32 extends MsgString {
     writeMsgpackTo(buffer: Buffer, offset: number): number {
+        offset |= 0;
         buffer[offset] = 0xdb;
+
         const length = buffer.write(this.value, offset + 5);
 
         buffer.writeUInt32BE(length, offset + 1);

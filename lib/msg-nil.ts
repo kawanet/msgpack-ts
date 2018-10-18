@@ -4,6 +4,7 @@ export class MsgNil implements MsgInterface {
     msgpackLength: number;
 
     writeMsgpackTo(buffer: Buffer, offset: number): number {
+        offset |= 0;
         buffer[offset] = 0xc0;
         return 1;
     }

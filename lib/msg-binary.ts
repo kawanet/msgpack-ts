@@ -17,6 +17,8 @@ export class MsgBinary implements MsgInterface {
     writeMsgpackTo(buffer: Buffer, offset: number): number {
         const value = this.value;
         const length = value.length;
+
+        offset |= 0;
         if (length < 256) {
             buffer[offset++] = 0xc4;
             buffer[offset++] = length;

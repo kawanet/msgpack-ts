@@ -82,8 +82,9 @@ export function initDecoders(): Decoder[] {
 
     return decoders;
 
-    function decodeFixInt(buffer: Buffer, offset?: number) {
-        let value = buffer[0 | offset as number];
+    function decodeFixInt(buffer: Buffer, offset: number) {
+        offset |= 0;
+        let value = buffer[offset];
         if (value > 127) value -= 256;
         return new N.MsgFixInt(value);
     }
