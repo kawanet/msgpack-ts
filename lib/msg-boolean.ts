@@ -12,7 +12,7 @@ export class MsgBoolean implements MsgInterface {
         return this.value;
     }
 
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         buffer[offset] = this.value ? 0xc3 : 0xc2;
         return 1;
     }

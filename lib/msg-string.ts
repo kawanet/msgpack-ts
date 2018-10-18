@@ -15,7 +15,7 @@ export class MsgString implements MsgInterface {
         return this.value;
     }
 
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         const length = this.value.length * 3;
         const expect = (length < 32) ? MsgFixString : (length < 256) ? MsgString8 : (length < 65536) ? MsgString16 : MsgString32;
         const bytes = expect.prototype.writeMsgpackTo.call(this, buffer, offset);
@@ -26,7 +26,7 @@ export class MsgString implements MsgInterface {
 }
 
 export class MsgFixString extends MsgString {
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         const length = buffer.write(this.value, offset + 1);
         if (length > 31) throw new TypeError("Too long string: " + length);
 
@@ -38,7 +38,7 @@ export class MsgFixString extends MsgString {
 }
 
 export class MsgString8 extends MsgString {
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         buffer[offset] = 0xd9;
         const length = buffer.write(this.value, offset + 2);
         if (length > 255) throw new TypeError("Too long string: " + length);
@@ -51,7 +51,7 @@ export class MsgString8 extends MsgString {
 }
 
 export class MsgString16 extends MsgString {
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         buffer[offset] = 0xda;
         const length = buffer.write(this.value, offset + 3);
         if (length > 65535) throw new TypeError("Too long string: " + length);
@@ -64,7 +64,7 @@ export class MsgString16 extends MsgString {
 }
 
 export class MsgString32 extends MsgString {
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         buffer[offset] = 0xdb;
         const length = buffer.write(this.value, offset + 5);
 

@@ -3,7 +3,7 @@ import {MsgInterface} from "msg-interface";
 export class MsgNil implements MsgInterface {
     msgpackLength: number;
 
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         buffer[offset] = 0xc0;
         return 1;
     }

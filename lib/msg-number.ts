@@ -16,14 +16,14 @@ abstract class MsgNumber implements MsgInterface {
 }
 
 export class MsgFixInt extends MsgNumber {
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         buffer[offset] = this.value & 255;
         return 1;
     }
 }
 
 export class MsgInt8 extends MsgNumber {
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         buffer[offset] = 0xd0;
         buffer.writeInt8(+this.value, offset + 1);
         return 2;
@@ -31,7 +31,7 @@ export class MsgInt8 extends MsgNumber {
 }
 
 export class MsgUInt8 extends MsgNumber {
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         buffer[offset] = 0xcc;
         buffer.writeUInt8(+this.value, offset + 1);
         return 2;
@@ -39,7 +39,7 @@ export class MsgUInt8 extends MsgNumber {
 }
 
 export class MsgInt16 extends MsgNumber {
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         buffer[offset] = 0xd1;
         buffer.writeInt16BE(+this.value, offset + 1);
         return 3;
@@ -47,7 +47,7 @@ export class MsgInt16 extends MsgNumber {
 }
 
 export class MsgUInt16 extends MsgNumber {
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         buffer[offset] = 0xcd;
         buffer.writeUInt16BE(+this.value, offset + 1);
         return 3;
@@ -55,7 +55,7 @@ export class MsgUInt16 extends MsgNumber {
 }
 
 export class MsgInt32 extends MsgNumber {
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         buffer[offset] = 0xd2;
         buffer.writeInt32BE(+this.value, offset + 1);
         return 5;
@@ -63,7 +63,7 @@ export class MsgInt32 extends MsgNumber {
 }
 
 export class MsgUInt32 extends MsgNumber {
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         buffer[offset] = 0xce;
         buffer.writeUInt32BE(+this.value, offset + 1);
         return 5;
@@ -71,7 +71,7 @@ export class MsgUInt32 extends MsgNumber {
 }
 
 export class MsgFloat32 extends MsgNumber {
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         buffer[offset] = 0xca;
         buffer.writeFloatBE(+this.value, offset + 1);
         return 5;
@@ -79,7 +79,7 @@ export class MsgFloat32 extends MsgNumber {
 }
 
 export class MsgFloat64 extends MsgNumber {
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         buffer[offset] = 0xcb;
         buffer.writeDoubleBE(+this.value, offset + 1);
         return 9;
