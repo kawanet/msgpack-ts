@@ -1,0 +1,22 @@
+{
+  "include": [
+    "../lib/*.ts"
+  ],
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "removeComments": false,
+    "outDir": ".",
+    "skipLibCheck": false,
+    "strictNullChecks": true,
+    "types": [
+      "node"
+    ]
+  }
+}

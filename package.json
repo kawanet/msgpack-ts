@@ -29,7 +29,7 @@
     "typescript"
   ],
   "license": "MIT",
-  "main": "lib/index.js",
+  "main": "./lib/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kawanet/msgpack-ts.git"
@@ -40,7 +40,8 @@
     "mocha": "./node_modules/.bin/mocha test",
     "test": "npm run mocha",
     "tsc": "./node_modules/.bin/tsc",
+    "tsc-typings": "./node_modules/.bin/tsc -p typings/typings.json",
     "tsc-watch": "./node_modules/.bin/tsc --watch"
   },
-  "typings": "lib/index.ts"
+  "typings": "./typings/index.d.ts"
 }
