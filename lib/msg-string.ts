@@ -20,13 +20,7 @@ export class MsgString extends MsgValue {
     }
 }
 
-export class MsgFixString extends MsgValue {
-    constructor(value: string) {
-        super(value);
-        // maximum byte length
-        this.msgpackLength = 1 + value.length * 3;
-    }
-
+export class MsgFixString extends MsgString {
     static parse(buffer: Buffer, offset: number) {
         const length = buffer[offset] & 0x1f;
         const start = offset + 1;
@@ -45,13 +39,7 @@ export class MsgFixString extends MsgValue {
     }
 }
 
-export class MsgString8 extends MsgValue {
-    constructor(value: string) {
-        super(value);
-        // maximum byte length
-        this.msgpackLength = 2 + value.length * 3;
-    }
-
+export class MsgString8 extends MsgString {
     static parse(buffer: Buffer, offset: number) {
         const length = buffer.readUInt8(offset + 1);
         const start = offset + 2;
@@ -71,13 +59,7 @@ export class MsgString8 extends MsgValue {
     }
 }
 
-export class MsgString16 extends MsgValue {
-    constructor(value: string) {
-        super(value);
-        // maximum byte length
-        this.msgpackLength = 3 + value.length * 3;
-    }
-
+export class MsgString16 extends MsgString {
     static parse(buffer: Buffer, offset: number) {
         const length = buffer.readUInt16BE(offset + 1);
         const start = offset + 3;
@@ -97,13 +79,7 @@ export class MsgString16 extends MsgValue {
     }
 }
 
-export class MsgString32 extends MsgValue {
-    constructor(value: string) {
-        super(value);
-        // maximum byte length
-        this.msgpackLength = 5 + value.length * 3;
-    }
-
+export class MsgString32 extends MsgString {
     static parse(buffer: Buffer, offset: number) {
         const length = buffer.readUInt32BE(offset + 1);
         const start = offset + 5;

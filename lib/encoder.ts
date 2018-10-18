@@ -18,7 +18,7 @@ type Encoder = (value: any) => MsgInterface;
 
 export function initEncoders(): { [type: string]: Encoder; } {
     return {
-        boolean: MsgBoolean.encode,
+        boolean: (value: boolean) => new MsgBoolean(value),
         number: encodeNumber,
         object: encodeObject,
         string: (value: string) => new MsgString(value),

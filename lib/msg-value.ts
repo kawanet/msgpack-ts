@@ -1,7 +1,7 @@
 import {Msg, MsgInterface} from "msg-interface";
 
 export abstract class MsgValue extends Msg {
-    constructor(value?: any) {
+    protected constructor(value?: any) {
         super();
         this.value = value;
     }

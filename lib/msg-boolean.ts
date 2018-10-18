@@ -1,5 +1,3 @@
-import {MsgInterface} from "msg-interface";
-
 import {MsgValue} from "./msg-value";
 
 export class MsgBoolean extends MsgValue {
@@ -10,10 +8,6 @@ export class MsgBoolean extends MsgValue {
     static from(buffer: Buffer, offset?: number) {
         const lsb = buffer[0 | offset as number] & 1;
         return new MsgBoolean(!!lsb);
-    }
-
-    static encode(value: boolean): MsgInterface {
-        return new MsgBoolean(value);
     }
 
     writeMsgpackTo(buffer: Buffer, offset: number) {

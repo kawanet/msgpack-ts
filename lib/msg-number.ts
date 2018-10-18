@@ -1,10 +1,12 @@
 import {MsgValue} from "./msg-value";
 
-export class MsgFixInt extends MsgValue {
+abstract class MsgNumber extends MsgValue {
     constructor(value: number) {
         super(value);
     }
+}
 
+export class MsgFixInt extends MsgNumber {
     static parse(buffer: Buffer, offset?: number) {
         let value = buffer[0 | offset as number];
         if (value > 127) value -= 256;
@@ -17,11 +19,7 @@ export class MsgFixInt extends MsgValue {
     }
 }
 
-export class MsgInt8 extends MsgValue {
-    constructor(value: number) {
-        super(value);
-    }
-
+export class MsgInt8 extends MsgNumber {
     static parse(buffer: Buffer, offset: number) {
         return new MsgInt8(buffer.readInt8(offset + 1));
     }
@@ -33,11 +31,7 @@ export class MsgInt8 extends MsgValue {
     }
 }
 
-export class MsgUInt8 extends MsgValue {
-    constructor(value: number) {
-        super(value);
-    }
-
+export class MsgUInt8 extends MsgNumber {
     static parse(buffer: Buffer, offset: number) {
         return new MsgUInt8(buffer.readUInt8(offset + 1));
     }
@@ -49,11 +43,7 @@ export class MsgUInt8 extends MsgValue {
     }
 }
 
-export class MsgInt16 extends MsgValue {
-    constructor(value: number) {
-        super(value);
-    }
-
+export class MsgInt16 extends MsgNumber {
     static parse(buffer: Buffer, offset: number) {
         return new MsgInt16(buffer.readInt16BE(offset + 1));
     }
@@ -65,11 +55,7 @@ export class MsgInt16 extends MsgValue {
     }
 }
 
-export class MsgUInt16 extends MsgValue {
-    constructor(value: number) {
-        super(value);
-    }
-
+export class MsgUInt16 extends MsgNumber {
     static parse(buffer: Buffer, offset: number) {
         return new MsgUInt16(buffer.readUInt16BE(offset + 1));
     }
@@ -81,11 +67,7 @@ export class MsgUInt16 extends MsgValue {
     }
 }
 
-export class MsgInt32 extends MsgValue {
-    constructor(value: number) {
-        super(value);
-    }
-
+export class MsgInt32 extends MsgNumber {
     static parse(buffer: Buffer, offset: number) {
         return new MsgInt32(buffer.readInt32BE(offset + 1));
     }
@@ -97,11 +79,7 @@ export class MsgInt32 extends MsgValue {
     }
 }
 
-export class MsgUInt32 extends MsgValue {
-    constructor(value: number) {
-        super(value);
-    }
-
+export class MsgUInt32 extends MsgNumber {
     static parse(buffer: Buffer, offset: number) {
         return new MsgUInt32(buffer.readUInt32BE(offset + 1));
     }
@@ -113,11 +91,7 @@ export class MsgUInt32 extends MsgValue {
     }
 }
 
-export class MsgFloat32 extends MsgValue {
-    constructor(value: number) {
-        super(value);
-    }
-
+export class MsgFloat32 extends MsgNumber {
     static parse(buffer: Buffer, offset: number) {
         return new MsgFloat32(buffer.readFloatBE(offset + 1));
     }
@@ -129,11 +103,7 @@ export class MsgFloat32 extends MsgValue {
     }
 }
 
-export class MsgFloat64 extends MsgValue {
-    constructor(value: number) {
-        super(value);
-    }
-
+export class MsgFloat64 extends MsgNumber {
     static parse(buffer: Buffer, offset: number) {
         return new MsgFloat32(buffer.readDoubleBE(offset + 1));
     }

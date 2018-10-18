@@ -9,10 +9,6 @@ export class MsgNil extends MsgValue {
         return new MsgNil();
     }
 
-    static encode(_value: void) {
-        return new MsgNil();
-    }
-
     writeMsgpackTo(buffer: Buffer, offset: number) {
         buffer[offset] = 0xc0;
         return 1;
