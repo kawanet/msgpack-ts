@@ -7,6 +7,7 @@
     "url": "https://github.com/kawanet/msgpack-ts/issues"
   },
   "dependencies": {
+    "msg-ext": "github:kawanet/msg-ext",
     "msg-int64": "github:kawanet/msg-int64",
     "msg-interface": "github:kawanet/msg-interface"
   },
