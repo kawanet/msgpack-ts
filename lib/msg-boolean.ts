@@ -11,6 +11,8 @@ export class MsgBoolean extends MsgValue {
     }
 }
 
-((P) => {
-    P.msgpackLength = 1;
-})(MsgBoolean.prototype);
+/**
+ * constant length
+ */
+
+MsgBoolean.prototype.msgpackLength = 1;

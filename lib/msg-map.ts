@@ -67,10 +67,10 @@ export class MsgMap32 extends MsgMap {
     }
 }
 
-setMsgpackLength(MsgFixMap, 1);
-setMsgpackLength(MsgMap16, 3);
-setMsgpackLength(MsgMap32, 5);
+/**
+ * constant length
+ */
 
-function setMsgpackLength(msgClass: Function, msgpackLength: number) {
-    msgClass.prototype.msgpackLength = msgpackLength;
-}
+MsgFixMap.prototype.msgpackLength = 1;
+MsgMap16.prototype.msgpackLength = 3;
+MsgMap32.prototype.msgpackLength = 5;

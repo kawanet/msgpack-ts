@@ -59,10 +59,10 @@ export class MsgArray32 extends MsgArray {
     }
 }
 
-setMsgpackLength(MsgFixArray, 1);
-setMsgpackLength(MsgArray16, 3);
-setMsgpackLength(MsgArray32, 5);
+/**
+ * constant length
+ */
 
-function setMsgpackLength(msgClass: Function, msgpackLength: number) {
-    msgClass.prototype.msgpackLength = msgpackLength;
-}
+MsgFixArray.prototype.msgpackLength = 1;
+MsgArray16.prototype.msgpackLength = 3;
+MsgArray32.prototype.msgpackLength = 5;

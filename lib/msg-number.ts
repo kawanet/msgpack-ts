@@ -81,16 +81,16 @@ export class MsgFloat64 extends MsgNumber {
  * constant length
  */
 
-setMsgpackLength(MsgFixInt, 1);
-setMsgpackLength(MsgInt8, 2);
-setMsgpackLength(MsgUInt8, 2);
-setMsgpackLength(MsgInt16, 3);
-setMsgpackLength(MsgUInt16, 3);
-setMsgpackLength(MsgInt32, 5);
-setMsgpackLength(MsgUInt32, 5);
-setMsgpackLength(MsgFloat32, 5);
-setMsgpackLength(MsgFloat64, 9);
+(setMsgpackLength => {
 
-function setMsgpackLength(msgClass: Function, msgpackLength: number) {
-    msgClass.prototype.msgpackLength = msgpackLength;
-}
+    setMsgpackLength(MsgFixInt, 1);
+    setMsgpackLength(MsgInt8, 2);
+    setMsgpackLength(MsgUInt8, 2);
+    setMsgpackLength(MsgInt16, 3);
+    setMsgpackLength(MsgUInt16, 3);
+    setMsgpackLength(MsgInt32, 5);
+    setMsgpackLength(MsgUInt32, 5);
+    setMsgpackLength(MsgFloat32, 5);
+    setMsgpackLength(MsgFloat64, 9);
+
+})((Class: Function, length: number) => Class.prototype.msgpackLength = length);

@@ -11,7 +11,8 @@ export class MsgNil extends MsgValue {
     }
 }
 
-((P) => {
-    P.msgpackLength = 1;
-    P.value = null;
-})(MsgNil.prototype);
+/**
+ * constant length
+ */
+
+MsgNil.prototype.msgpackLength = 1;
