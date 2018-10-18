@@ -11,7 +11,7 @@ const atos = (array: any) => [].map.call(array, (v: number) => (v > 15 ? "" : "0
 // set 1 for types to run test
 const TEST_TYPES = {
     array: 1,
-    bignum: 0,
+    bignum: 1,
     binary: 1,
     bool: 1,
     ext: 1,
