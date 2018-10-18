@@ -1,16 +1,19 @@
-import {Msg} from "msg-interface";
+import {MsgInterface} from "msg-interface";
 
-export abstract class MsgValue extends Msg {
+export abstract class MsgValue implements MsgInterface {
     protected constructor(value?: any) {
-        super();
         this.value = value;
     }
+
+    abstract writeMsgpackTo(buffer: Buffer, offset?: number): number;
 
     valueOf() {
         return this.value;
     }
 
     value: any;
+
+    msgpackLength: number;
 }
 
 MsgValue.prototype.value = void 0;

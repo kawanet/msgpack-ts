@@ -1,8 +1,10 @@
-import {Msg, MsgInterface} from "msg-interface";
+import {MsgInterface} from "msg-interface";
 
-export abstract class MsgArray extends Msg {
+export abstract class MsgArray implements MsgInterface {
     msgpackLength = 5;
     protected array = [] as MsgInterface[];
+
+    abstract writeMsgpackTo(buffer: Buffer, offset?: number): number;
 
     add(value: MsgInterface) {
         this.array.push(value);
