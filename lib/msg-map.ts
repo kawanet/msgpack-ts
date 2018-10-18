@@ -1,18 +1,12 @@
 import {Msg, MsgInterface} from "msg-interface";
 
-import {MsgValue} from "./msg-value";
-import {MsgString} from "./msg-string";
-
 export class MsgMap extends Msg {
-    constructor(value?: object) {
-        super();
-        if (!value) value = {};
-        const array = this.array = [] as MsgInterface[];
-        Object.keys(value).forEach((key: string) => {
-            const val = MsgValue.fromAny((value as any)[key]);
-            if (val) array.push(new MsgString(key), val);
-        });
-        this.msgpackLength = array.reduce((total: number, msg: MsgInterface) => total + msg.msgpackLength, 5);
+    msgpackLength = 5;
+    array = [] as MsgInterface[];
+
+    set(key: MsgInterface, value: MsgInterface) {
+        this.array.push(key, value);
+        this.msgpackLength += key.msgpackLength + value.msgpackLength;
     }
 
     valueOf() {
@@ -32,11 +26,11 @@ export class MsgMap extends Msg {
         const C = (length < 16) ? MsgFixMap : (length < 65536) ? MsgMap16 : MsgMap32;
         return C.prototype.writeMsgpackTo.call(this, buffer, offset);
     }
-
-    array: MsgInterface[];
 }
 
 export class MsgFixMap extends MsgMap {
+    msgpackLength = 1;
+
     writeMsgpackTo(buffer: Buffer, offset: number): number {
         const length = this.array.length / 2;
         buffer[offset] = 0x80 | length;
@@ -46,6 +40,8 @@ export class MsgFixMap extends MsgMap {
 }
 
 export class MsgMap16 extends MsgMap {
+    msgpackLength = 3;
+
     writeMsgpackTo(buffer: Buffer, offset: number): number {
         const length = this.array.length / 2;
         buffer[offset] = 0xde;

@@ -13,12 +13,6 @@ export abstract class MsgValue extends Msg {
         return f && f(buffer, offset);
     }
 
-    static fromAny(value: any): MsgInterface {
-        const type = typeof value;
-        const f = encoders[type];
-        return f && f(value);
-    }
-
     valueOf() {
         return this.value;
     }
@@ -29,7 +23,5 @@ export abstract class MsgValue extends Msg {
 MsgValue.prototype.value = void 0;
 
 import {initDecoders} from "./decoder";
-import {initEncoders} from "./encoder";
 
 const decoders = initDecoders();
-const encoders = initEncoders();

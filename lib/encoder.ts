@@ -15,14 +15,19 @@ const UINT16_NEXT = 0x10000;
 const UINT32_NEXT = 0x100000000;
 
 type Encoder = (value: any) => MsgInterface;
+type Encoders = { [type: string]: Encoder };
 
-export function initEncoders(): { [type: string]: Encoder; } {
-    return {
-        boolean: (value: boolean) => new MsgBoolean(value),
-        number: encodeNumber,
-        object: encodeObject,
-        string: (value: string) => new MsgString(value),
-    };
+const encoders: Encoders = {
+    boolean: (value: boolean) => new MsgBoolean(value),
+    number: encodeNumber,
+    object: encodeObject,
+    string: (value: string) => new MsgString(value),
+};
+
+export function encodeMsg(value: any): MsgInterface {
+    const type = typeof value;
+    const f = encoders[type];
+    return f && f(value);
 }
 
 function encodeNumber(value: number): MsgInterface {
@@ -63,7 +68,9 @@ function encodeObject(value: object): MsgInterface {
     }
 
     if (Array.isArray(value)) {
-        return new MsgArray(value);
+        const msg = new MsgArray();
+        value.forEach(item => msg.add(encodeMsg(item)));
+        return msg;
     }
 
     if (Buffer.isBuffer(value)) {
@@ -78,5 +85,7 @@ function encodeObject(value: object): MsgInterface {
         return new MsgUInt64(value.toBuffer());
     }
 
-    return new MsgMap(value);
+    const msg = new MsgMap();
+    Object.keys(value).forEach(key => msg.set(encodeMsg(key), encodeMsg((value as any)[key])));
+    return msg;
 }
