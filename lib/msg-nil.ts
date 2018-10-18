@@ -5,10 +5,6 @@ export class MsgNil extends MsgValue {
         super(null);
     }
 
-    static from(_buffer: Buffer, _offset: number) {
-        return new MsgNil();
-    }
-
     writeMsgpackTo(buffer: Buffer, offset: number) {
         buffer[offset] = 0xc0;
         return 1;

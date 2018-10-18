@@ -15,9 +15,9 @@ export function initDecoders(): Decoder[] {
 
     const decoders = new Array(256);
 
-    decoders[0xc0] = NIL.MsgNil.from;
-    decoders[0xc2] = BOO.MsgBoolean.from;
-    decoders[0xc3] = BOO.MsgBoolean.from;
+    decoders[0xc0] = (_buffer: Buffer, _offset: number) => new NIL.MsgNil();
+    decoders[0xc2] = (_buffer: Buffer, _offset: number) => new BOO.MsgBoolean(false);
+    decoders[0xc3] = (_buffer: Buffer, _offset: number) => new BOO.MsgBoolean(true);
 
     let i;
     for (i = 0x00; i < 0x80; i++) decoders[i] = NUM.MsgFixInt.parse;
