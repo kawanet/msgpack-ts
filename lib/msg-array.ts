@@ -1,6 +1,10 @@
 import {MsgInterface} from "msg-interface";
 
-export abstract class MsgArray implements MsgInterface {
+export interface MsgArrayInterface extends MsgInterface {
+    add(value: MsgInterface): void;
+}
+
+abstract class MsgArray implements MsgArrayInterface {
     msgpackLength: number;
 
     protected array = [] as MsgInterface[];

@@ -1,10 +1,10 @@
 import {MsgExt, MsgInterface} from "msg-interface";
 import {MsgInt64, MsgUInt64} from "msg-int64";
 
-import {MsgArray} from "./msg-array";
+import {MsgArrayInterface} from "./msg-array";
 import {MsgBinary} from "./msg-binary";
 import {MsgBoolean} from "./msg-boolean";
-import {MsgMap} from "./msg-map";
+import {MsgMapInterface} from "./msg-map";
 import {MsgNil} from "./msg-nil";
 import {MsgString} from "./msg-string";
 
@@ -98,7 +98,7 @@ function decodeString(buffer: Buffer, offset: number, skip: number, length: numb
     return msg;
 }
 
-function decodeArray(msg: MsgArray, buffer: Buffer, offset: number, skip: number, length: number) {
+function decodeArray(msg: MsgArrayInterface, buffer: Buffer, offset: number, skip: number, length: number) {
     let start = offset + skip;
 
     for (let i = 0; i < length; i++) {
@@ -110,7 +110,7 @@ function decodeArray(msg: MsgArray, buffer: Buffer, offset: number, skip: number
     return msg;
 }
 
-function decodeMap(msg: MsgMap, buffer: Buffer, offset: number, skip: number, length: number) {
+function decodeMap(msg: MsgMapInterface, buffer: Buffer, offset: number, skip: number, length: number) {
     let start = offset + skip;
 
     for (let i = 0; i < length; i++) {
