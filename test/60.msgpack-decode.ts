@@ -4,7 +4,9 @@ import * as assert from "assert";
 import * as msgpack from "../";
 import {Group} from "msgpack-test-js";
 
-const TITLE = __filename.split("/").pop();
+const TITLE = __filename.split("/").pop() as string;
+
+const atos = (array: any) => [].map.call(array, (v: number) => (v > 15 ? "" : "0") + v.toString(16)).join("-");
 
 // set 1 for types to run test
 const TEST_TYPES = {
@@ -27,7 +29,7 @@ describe(TITLE, () => {
         tryDesc(group + "", () => {
             exams.forEach((exam) => {
                 exam.getMsgpacks().forEach((buffer) => {
-                    it(binaryToHex(buffer), () => {
+                    it(atos(buffer), () => {
                         const value = msgpack.decode(buffer);
                         assert(exam.matchValue(value), "" + value);
                     });
@@ -36,12 +38,3 @@ describe(TITLE, () => {
         });
     });
 });
-
-function binaryToHex(buffer): string {
-    if (!buffer) return buffer + "";
-    return [].map.call(buffer, toHex).join("-");
-}
-
-function toHex(v) {
-    return (v > 15 ? "" : "0") + v.toString(16)
-}

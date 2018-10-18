@@ -7,16 +7,16 @@ export abstract class MsgValue extends Msg {
     }
 
     static parse(buffer: Buffer, offset?: number): MsgInterface {
-        offset = +offset || 0;
+        offset = 0 | offset as number;
         const token = buffer[offset];
         const f = decoders[token];
-        if (f) return f(buffer, offset);
+        return f && f(buffer, offset);
     }
 
     static fromAny(value: any): MsgInterface {
         const type = typeof value;
         const f = encoders[type];
-        if (f) return f(value);
+        return f && f(value);
     }
 
     valueOf() {

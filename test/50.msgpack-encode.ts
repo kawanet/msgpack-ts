@@ -4,7 +4,9 @@ import * as assert from "assert";
 import * as msgpack from "../";
 import {Exam} from "msgpack-test-js";
 
-const TITLE = __filename.split("/").pop();
+const TITLE = __filename.split("/").pop() as string;
+
+const atos = (array: any) => [].map.call(array, (v: number) => (v > 15 ? "" : "0") + v.toString(16)).join("-");
 
 // set 1 for types to run test
 const TEST_TYPES = {
@@ -30,19 +32,10 @@ describe(TITLE, () => {
             let title = type + ": " + exam.stringify(type);
             it(title, () => {
                 const value = exam.getValue(type);
-                const buffer = msgpack.encode(value);
-                const hint = exam.stringify(0) + " != " + binaryToHex(buffer);
+                const buffer = msgpack.encode(value) as Buffer;
+                const hint = exam.stringify(0) + " != " + atos(buffer);
                 assert(exam.matchMsgpack(buffer), hint);
             });
         });
     });
 });
-
-function binaryToHex(buffer): string {
-    if (!buffer) return buffer + "";
-    return [].map.call(buffer, toHex).join("-");
-}
-
-function toHex(v) {
-    return (v > 15 ? "" : "0") + v.toString(16)
-}

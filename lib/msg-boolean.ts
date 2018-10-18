@@ -8,7 +8,7 @@ export class MsgBoolean extends MsgValue {
     }
 
     static from(buffer: Buffer, offset?: number) {
-        const lsb = buffer[offset] & 1;
+        const lsb = buffer[0 | offset as number] & 1;
         return new MsgBoolean(!!lsb);
     }
 

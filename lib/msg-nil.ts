@@ -5,11 +5,11 @@ export class MsgNil extends MsgValue {
         super(null);
     }
 
-    static from(buffer: Buffer, offset: number) {
+    static from(_buffer: Buffer, _offset: number) {
         return new MsgNil();
     }
 
-    static encode(value: void) {
+    static encode(_value: void) {
         return new MsgNil();
     }
 

@@ -1,15 +1,16 @@
 import {Msg, MsgInterface} from "msg-interface";
 
 import {MsgValue} from "./msg-value";
+import {MsgString} from "./msg-string";
 
 export class MsgMap extends Msg {
     constructor(value?: object) {
         super();
         if (!value) value = {};
-        const array = this.array = [];
-        Object.keys(value).forEach((key) => {
-            const val = value[key];
-            array.push(MsgValue.fromAny(key), MsgValue.fromAny(val));
+        const array = this.array = [] as MsgInterface[];
+        Object.keys(value).forEach((key: string) => {
+            const val = MsgValue.fromAny((value as any)[key]);
+            if (val) array.push(new MsgString(key), val);
         });
         this.msgpackLength = array.reduce((total: number, msg: MsgInterface) => total + msg.msgpackLength, 5);
     }
@@ -17,7 +18,7 @@ export class MsgMap extends Msg {
     valueOf() {
         const array = this.array;
         const length = array.length;
-        const obj = {};
+        const obj = {} as { [key: string]: any };
         for (let i = 0; i < length;) {
             const key = array[i++];
             const val = array[i++];
@@ -26,7 +27,7 @@ export class MsgMap extends Msg {
         return obj;
     }
 
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         const length = this.array.length / 2;
         const C = (length < 16) ? MsgFixMap : (length < 65536) ? MsgMap16 : MsgMap32;
         return C.prototype.writeMsgpackTo.call(this, buffer, offset);
@@ -36,12 +37,12 @@ export class MsgMap extends Msg {
 }
 
 export class MsgFixMap extends MsgMap {
-    static parse(buffer: Buffer, offset: number) {
+    static parse(buffer: Buffer, offset: number): MsgFixMap {
         const length = buffer[offset] & 0x0f;
         return read(new MsgFixMap(), buffer, offset, offset + 1, length);
     }
 
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         const length = this.array.length / 2;
         buffer[offset] = 0x80 | length;
         const pos = offset + 1;
@@ -50,12 +51,12 @@ export class MsgFixMap extends MsgMap {
 }
 
 export class MsgMap16 extends MsgMap {
-    static parse(buffer: Buffer, offset: number) {
+    static parse(buffer: Buffer, offset: number): MsgMap16 {
         const length = buffer.readUInt16BE(offset + 1);
         return read(new MsgMap16(), buffer, offset, offset + 3, length);
     }
 
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         const length = this.array.length / 2;
         buffer[offset] = 0xde;
         const pos = buffer.writeUInt16BE(length, offset + 1);
@@ -69,7 +70,7 @@ export class MsgMap32 extends MsgMap {
         return read(new MsgMap32(), buffer, offset, offset + 5, length);
     }
 
-    writeMsgpackTo(buffer: Buffer, offset: number) {
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
         const length = this.array.length / 2;
         buffer[offset] = 0xdf;
         const pos = buffer.writeUInt32BE(length, offset + 1);
@@ -93,6 +94,6 @@ function read(self: MsgMap, buffer: Buffer, offset: number, start: number, lengt
     return self;
 }
 
-function write(self: MsgMap, buffer: Buffer, offset: number, start: number) {
+function write(self: MsgMap, buffer: Buffer, offset: number, start: number): number {
     return self.array.reduce((pos, msg) => pos + msg.writeMsgpackTo(buffer, pos), start) - offset;
 }

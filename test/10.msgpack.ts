@@ -2,7 +2,7 @@ import * as assert from "assert";
 import {isMsg, MsgInterface, msgToBuffer} from "msg-interface";
 import * as m from "../";
 
-const TITLE = __filename.split("/").pop();
+const TITLE = __filename.split("/").pop() as string;
 
 const atos = (array: any) => [].map.call(array, (v: number) => (v > 15 ? "" : "0") + v.toString(16)).join("-");
 const mtos = (msg: MsgInterface) => atos(msgToBuffer(msg));

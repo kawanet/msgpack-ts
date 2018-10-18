@@ -6,7 +6,7 @@ export class MsgFixInt extends MsgValue {
     }
 
     static parse(buffer: Buffer, offset?: number) {
-        let value = buffer[offset];
+        let value = buffer[0 | offset as number];
         if (value > 127) value -= 256;
         return new MsgFixInt(value);
     }

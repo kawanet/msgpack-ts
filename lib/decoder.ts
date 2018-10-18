@@ -1,4 +1,4 @@
-import {MsgRaw, MsgExt, MsgInterface} from "msg-interface";
+import {MsgExt, MsgInterface} from "msg-interface";
 import {MsgInt64, MsgUInt64} from "msg-int64";
 
 import {MsgBinary} from "./msg-binary";
@@ -25,30 +25,30 @@ export function initDecoders(): Decoder[] {
     for (i = 0x90; i < 0xa0; i++) decoders[i] = ARR.MsgFixArray.parse;
     for (i = 0xa0; i < 0xc0; i++) decoders[i] = STR.MsgFixString.parse;
 
-    decoders[0xc4] = (buffer, offset) => decodeBinary(buffer, offset, 2, buffer.readUInt8(offset + 1));
-    decoders[0xc5] = (buffer, offset) => decodeBinary(buffer, offset, 3, buffer.readUInt16BE(offset + 1));
-    decoders[0xc6] = (buffer, offset) => decodeBinary(buffer, offset, 5, buffer.readUInt32BE(offset + 1));
+    decoders[0xc4] = (buffer: Buffer, offset: number) => decodeBinary(buffer, offset, 2, buffer.readUInt8(offset + 1));
+    decoders[0xc5] = (buffer: Buffer, offset: number) => decodeBinary(buffer, offset, 3, buffer.readUInt16BE(offset + 1));
+    decoders[0xc6] = (buffer: Buffer, offset: number) => decodeBinary(buffer, offset, 5, buffer.readUInt32BE(offset + 1));
 
-    decoders[0xc7] = (buffer, offset) => decodeExt(buffer, offset, 2, buffer.readUInt8(offset + 1));
-    decoders[0xc8] = (buffer, offset) => decodeExt(buffer, offset, 3, buffer.readUInt16BE(offset + 1));
-    decoders[0xc9] = (buffer, offset) => decodeExt(buffer, offset, 5, buffer.readUInt32BE(offset + 1));
+    decoders[0xc7] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 2, buffer.readUInt8(offset + 1));
+    decoders[0xc8] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 3, buffer.readUInt16BE(offset + 1));
+    decoders[0xc9] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 5, buffer.readUInt32BE(offset + 1));
 
     decoders[0xca] = NUM.MsgFloat32.parse;
     decoders[0xcb] = NUM.MsgFloat64.parse;
     decoders[0xcc] = NUM.MsgUInt8.parse;
     decoders[0xcd] = NUM.MsgUInt16.parse;
     decoders[0xce] = NUM.MsgUInt32.parse;
-    decoders[0xcf] = (buffer, offset) => new MsgUInt64(buffer, offset + 1);
+    decoders[0xcf] = (buffer: Buffer, offset: number) => new MsgUInt64(buffer, offset + 1);
     decoders[0xd0] = NUM.MsgInt8.parse;
     decoders[0xd1] = NUM.MsgInt16.parse;
     decoders[0xd2] = NUM.MsgInt32.parse;
-    decoders[0xd3] = (buffer, offset) => new MsgInt64(buffer, offset + 1);
+    decoders[0xd3] = (buffer: Buffer, offset: number) => new MsgInt64(buffer, offset + 1);
 
-    decoders[0xd4] = (buffer, offset) => decodeExt(buffer, offset, 1, 1);
-    decoders[0xd5] = (buffer, offset) => decodeExt(buffer, offset, 1, 2);
-    decoders[0xd6] = (buffer, offset) => decodeExt(buffer, offset, 1, 4);
-    decoders[0xd7] = (buffer, offset) => decodeExt(buffer, offset, 1, 8);
-    decoders[0xd8] = (buffer, offset) => decodeExt(buffer, offset, 1, 16);
+    decoders[0xd4] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 1, 1);
+    decoders[0xd5] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 1, 2);
+    decoders[0xd6] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 1, 4);
+    decoders[0xd7] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 1, 8);
+    decoders[0xd8] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 1, 16);
 
     decoders[0xd9] = STR.MsgString8.parse;
     decoders[0xda] = STR.MsgString16.parse;
