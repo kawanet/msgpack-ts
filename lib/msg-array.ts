@@ -24,12 +24,6 @@ export class MsgArray extends Msg {
 }
 
 export class MsgFixArray extends MsgArray {
-
-    static parse(buffer: Buffer, offset: number) {
-        const length = buffer[offset] & 0x0f;
-        return read(new MsgFixArray(), buffer, offset, offset + 1, length);
-    }
-
     writeMsgpackTo(buffer: Buffer, offset: number): number {
         buffer[offset] = 0x90 | this.array.length;
         return write(this, buffer, offset, offset + 1);
@@ -37,12 +31,6 @@ export class MsgFixArray extends MsgArray {
 }
 
 export class MsgArray16 extends MsgArray {
-
-    static parse(buffer: Buffer, offset: number) {
-        const length = buffer.readUInt16BE(offset + 1);
-        return read(new MsgArray16(), buffer, offset, offset + 3, length);
-    }
-
     writeMsgpackTo(buffer: Buffer, offset: number): number {
         buffer[offset] = 0xdc;
         const pos = buffer.writeUInt16BE(this.array.length, offset + 1);
@@ -51,28 +39,11 @@ export class MsgArray16 extends MsgArray {
 }
 
 export class MsgArray32 extends MsgArray {
-
-    static parse(buffer: Buffer, offset: number) {
-        const length = buffer.readUInt32BE(offset + 1);
-        return read(new MsgArray32(), buffer, offset, offset + 5, length);
-    }
-
     writeMsgpackTo(buffer: Buffer, offset: number): number {
         buffer[offset] = 0xdd;
         const pos = buffer.writeUInt32BE(this.array.length, offset + 1);
         return write(this, buffer, offset, pos);
     }
-}
-
-function read(self: MsgArray, buffer: Buffer, offset: number, start: number, length: number) {
-    for (let i = 0; i < length; i++) {
-        const msg = self.array[i] = MsgValue.parse(buffer, start);
-        start += msg.msgpackLength;
-    }
-
-    self.msgpackLength = start - offset;
-
-    return self;
 }
 
 function write(self: MsgArray, buffer: Buffer, offset: number, start: number): number {

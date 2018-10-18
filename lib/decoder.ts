@@ -2,6 +2,8 @@ import {MsgExt, MsgInterface} from "msg-interface";
 import {MsgInt64, MsgUInt64} from "msg-int64";
 
 import {MsgBinary} from "./msg-binary";
+import {MsgValue} from "./msg-value";
+import {MsgArray} from "./msg-array";
 
 type Decoder = (buffer: Buffer, offset: number) => MsgInterface;
 
@@ -21,10 +23,12 @@ export function initDecoders(): Decoder[] {
     decoders[0xc2] = (_buffer: Buffer, _offset: number) => new BOO.MsgBoolean(false);
     decoders[0xc3] = (_buffer: Buffer, _offset: number) => new BOO.MsgBoolean(true);
 
+    const decodeFixArray = (buffer: Buffer, offset: number) => decodeArray(new ARR.MsgFixArray(), buffer, offset, 1, buffer[offset] & 0x0f);
+
     let i;
     for (i = 0x00; i < 0x80; i++) decoders[i] = decodeFixInt;
     for (i = 0x80; i < 0x90; i++) decoders[i] = MAP.MsgFixMap.parse;
-    for (i = 0x90; i < 0xa0; i++) decoders[i] = ARR.MsgFixArray.parse;
+    for (i = 0x90; i < 0xa0; i++) decoders[i] = decodeFixArray;
     for (i = 0xa0; i < 0xc0; i++) decoders[i] = decodeFixString;
 
     decoders[0xc4] = (buffer: Buffer, offset: number) => decodeBinary(buffer, offset, 2, buffer.readUInt8(offset + 1));
@@ -56,8 +60,8 @@ export function initDecoders(): Decoder[] {
     decoders[0xda] = decodeString16;
     decoders[0xdb] = decodeString32;
 
-    decoders[0xdc] = ARR.MsgArray16.parse;
-    decoders[0xdd] = ARR.MsgArray32.parse;
+    decoders[0xdc] = (buffer: Buffer, offset: number) => decodeArray(new ARR.MsgArray16(), buffer, offset, 3, buffer.readUInt16BE(offset + 1));
+    decoders[0xdd] = (buffer: Buffer, offset: number) => decodeArray(new ARR.MsgArray32(), buffer, offset, 5, buffer.readUInt32BE(offset + 1));
 
     decoders[0xde] = MAP.MsgMap16.parse;
     decoders[0xdf] = MAP.MsgMap32.parse;
@@ -111,6 +115,19 @@ export function initDecoders(): Decoder[] {
         msg.msgpackLength = end - offset;
         return msg;
     }
+}
+
+function decodeArray(self: MsgArray, buffer: Buffer, offset: number, skip: number, length: number) {
+    let start = offset + skip;
+
+    for (let i = 0; i < length; i++) {
+        const msg = self.array[i] = MsgValue.parse(buffer, start);
+        start += msg.msgpackLength;
+    }
+
+    self.msgpackLength = start - offset;
+
+    return self;
 }
 
 function decodeBinary(buffer: Buffer, offset: number, skip: number, length: number) {
