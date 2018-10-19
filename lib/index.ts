@@ -5,13 +5,13 @@ import {msgToBuffer} from "msg-interface";
 import {decodeMsg} from "./decoder";
 import {encodeMsg} from "./encoder";
 
-export * from "./msg-array";
-export * from "./msg-binary";
-export * from "./msg-boolean";
-export * from "./msg-map";
-export * from "./msg-nil";
+export {MsgFixArray, MsgArray16, MsgArray32} from "./msg-array";
+export {MsgBinary} from "./msg-binary";
+export {MsgBoolean} from "./msg-boolean";
+export {MsgFixMap, MsgMap16, MsgMap32} from "./msg-map";
+export {MsgNil} from "./msg-nil";
 export * from "msg-number";
-export * from "./msg-string";
+export {MsgString, MsgFixString, MsgString8, MsgString16, MsgString32} from "./msg-string";
 
 export function encode(value: any): Buffer {
     const msg = encodeMsg(value);

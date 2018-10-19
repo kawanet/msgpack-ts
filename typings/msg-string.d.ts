@@ -1,6 +1,9 @@
 /// <reference types="node" />
 import { MsgInterface } from "msg-interface";
-export declare class MsgString implements MsgInterface {
+interface MsgStringInterface extends MsgInterface {
+    valueOf(): string;
+}
+export declare class MsgString implements MsgStringInterface {
     msgpackLength: number;
     protected value: string;
     constructor(value: string);
@@ -19,3 +22,13 @@ export declare class MsgString16 extends MsgString {
 export declare class MsgString32 extends MsgString {
     writeMsgpackTo(buffer: Buffer, offset: number): number;
 }
+export declare class MsgStringBuffer implements MsgStringInterface {
+    msgpackLength: number;
+    protected buffer: Buffer;
+    protected offset: number;
+    protected skip: number;
+    constructor(buffer: Buffer, offset: number);
+    valueOf(): string;
+    writeMsgpackTo(buffer: Buffer, offset: number): number;
+}
+export {};

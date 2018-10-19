@@ -1,10 +1,17 @@
 import {MsgInterface} from "msg-interface";
 
-export class MsgString implements MsgInterface {
+interface MsgStringInterface extends MsgInterface {
+    valueOf(): string;
+}
+
+export class MsgString implements MsgStringInterface {
     msgpackLength: number;
+
     protected value: string;
 
     constructor(value: string) {
+        if (value == null) return;
+
         this.value = value;
 
         // maximum byte length
@@ -80,5 +87,32 @@ export class MsgString32 extends MsgString {
 
         // actual byte length
         return 5 + length;
+    }
+}
+
+export class MsgStringBuffer implements MsgStringInterface {
+    protected buffer: Buffer;
+    protected offset: number;
+    protected skip: number;
+    msgpackLength: number;
+
+    constructor(buffer: Buffer, offset: number, skip: number, size: number) {
+        this.buffer = buffer;
+        this.offset = offset;
+        this.skip = skip;
+        this.msgpackLength = skip + size;
+    }
+
+    valueOf(): string {
+        const start = this.offset + this.skip;
+        const end = this.offset + this.msgpackLength;
+        return this.buffer.toString("UTF8", start, end);
+    }
+
+    writeMsgpackTo(buffer: Buffer, offset: number): number {
+        const start = this.offset;
+        const end = start + this.msgpackLength;
+        this.buffer.copy(buffer, offset, start, end);
+        return length;
     }
 }
