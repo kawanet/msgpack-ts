@@ -26,13 +26,13 @@ function initDecoders(): Decoder[] {
 
     const decoders: Decoder[] = new Array(256);
 
-    decoders[0xc0] = (_buffer: Buffer, _offset: number) => new MsgNil();
-    decoders[0xc2] = (_buffer: Buffer, _offset: number) => new MsgBoolean(false);
-    decoders[0xc3] = (_buffer: Buffer, _offset: number) => new MsgBoolean(true);
+    decoders[0xc0] = (_buffer, _offset) => new MsgNil();
+    decoders[0xc2] = (_buffer, _offset) => new MsgBoolean(false);
+    decoders[0xc3] = (_buffer, _offset) => new MsgBoolean(true);
 
-    const decodeString = (buffer: Buffer, offset: number) => new MsgStringBuffer(buffer, offset, 1, buffer[offset] & 0x1f);
-    const decodeFixArray = (buffer: Buffer, offset: number) => decodeArray(new A.MsgFixArray(), buffer, offset, 1, buffer[offset] & 0x0f);
-    const decodeFixMap = (buffer: Buffer, offset: number) => decodeMap(new M.MsgFixMap(), buffer, offset, 1, buffer[offset] & 0x0f);
+    const decodeString: Decoder = (buffer, offset) => new MsgStringBuffer(buffer, offset, 1, buffer[offset] & 0x1f);
+    const decodeFixArray: Decoder = (buffer, offset) => decodeArray(new A.MsgFixArray(), buffer, offset, 1, buffer[offset] & 0x0f);
+    const decodeFixMap: Decoder = (buffer, offset) => decodeMap(new M.MsgFixMap(), buffer, offset, 1, buffer[offset] & 0x0f);
 
     let i;
     for (i = 0x00; i < 0x80; i++) decoders[i] = decodeFixInt;
@@ -40,40 +40,40 @@ function initDecoders(): Decoder[] {
     for (i = 0x90; i < 0xa0; i++) decoders[i] = decodeFixArray;
     for (i = 0xa0; i < 0xc0; i++) decoders[i] = decodeString;
 
-    decoders[0xc4] = (buffer: Buffer, offset: number) => decodeBinary(buffer, offset, 2, buffer.readUInt8(offset + 1));
-    decoders[0xc5] = (buffer: Buffer, offset: number) => decodeBinary(buffer, offset, 3, buffer.readUInt16BE(offset + 1));
-    decoders[0xc6] = (buffer: Buffer, offset: number) => decodeBinary(buffer, offset, 5, buffer.readUInt32BE(offset + 1));
+    decoders[0xc4] = (buffer, offset) => decodeBinary(buffer, offset, 2, buffer.readUInt8(offset + 1));
+    decoders[0xc5] = (buffer, offset) => decodeBinary(buffer, offset, 3, buffer.readUInt16BE(offset + 1));
+    decoders[0xc6] = (buffer, offset) => decodeBinary(buffer, offset, 5, buffer.readUInt32BE(offset + 1));
 
-    decoders[0xc7] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 2, buffer.readUInt8(offset + 1));
-    decoders[0xc8] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 3, buffer.readUInt16BE(offset + 1));
-    decoders[0xc9] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 5, buffer.readUInt32BE(offset + 1));
+    decoders[0xc7] = (buffer, offset) => decodeExt(buffer, offset, 2, buffer.readUInt8(offset + 1));
+    decoders[0xc8] = (buffer, offset) => decodeExt(buffer, offset, 3, buffer.readUInt16BE(offset + 1));
+    decoders[0xc9] = (buffer, offset) => decodeExt(buffer, offset, 5, buffer.readUInt32BE(offset + 1));
 
-    decoders[0xca] = (buffer: Buffer, offset: number) => new N.MsgFloat32(buffer.readFloatBE(offset + 1));
-    decoders[0xcb] = (buffer: Buffer, offset: number) => new N.MsgFloat32(buffer.readDoubleBE(offset + 1));
-    decoders[0xcc] = (buffer: Buffer, offset: number) => new N.MsgUInt8(buffer.readUInt8(offset + 1));
-    decoders[0xcd] = (buffer: Buffer, offset: number) => new N.MsgUInt16(buffer.readUInt16BE(offset + 1));
-    decoders[0xce] = (buffer: Buffer, offset: number) => new N.MsgUInt32(buffer.readUInt32BE(offset + 1));
-    decoders[0xcf] = (buffer: Buffer, offset: number) => new N.MsgUInt64(buffer, offset + 1);
-    decoders[0xd0] = (buffer: Buffer, offset: number) => new N.MsgInt8(buffer.readInt8(offset + 1));
-    decoders[0xd1] = (buffer: Buffer, offset: number) => new N.MsgInt16(buffer.readInt16BE(offset + 1));
-    decoders[0xd2] = (buffer: Buffer, offset: number) => new N.MsgInt32(buffer.readInt32BE(offset + 1));
-    decoders[0xd3] = (buffer: Buffer, offset: number) => new N.MsgInt64(buffer, offset + 1);
+    decoders[0xca] = (buffer, offset) => new N.MsgFloat32(buffer.readFloatBE(offset + 1));
+    decoders[0xcb] = (buffer, offset) => new N.MsgFloat32(buffer.readDoubleBE(offset + 1));
+    decoders[0xcc] = (buffer, offset) => new N.MsgUInt8(buffer.readUInt8(offset + 1));
+    decoders[0xcd] = (buffer, offset) => new N.MsgUInt16(buffer.readUInt16BE(offset + 1));
+    decoders[0xce] = (buffer, offset) => new N.MsgUInt32(buffer.readUInt32BE(offset + 1));
+    decoders[0xcf] = (buffer, offset) => new N.MsgUInt64(buffer, offset + 1);
+    decoders[0xd0] = (buffer, offset) => new N.MsgInt8(buffer.readInt8(offset + 1));
+    decoders[0xd1] = (buffer, offset) => new N.MsgInt16(buffer.readInt16BE(offset + 1));
+    decoders[0xd2] = (buffer, offset) => new N.MsgInt32(buffer.readInt32BE(offset + 1));
+    decoders[0xd3] = (buffer, offset) => new N.MsgInt64(buffer, offset + 1);
 
-    decoders[0xd4] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 1, 1);
-    decoders[0xd5] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 1, 2);
-    decoders[0xd6] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 1, 4);
-    decoders[0xd7] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 1, 8);
-    decoders[0xd8] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 1, 16);
+    decoders[0xd4] = (buffer, offset) => decodeExt(buffer, offset, 1, 1);
+    decoders[0xd5] = (buffer, offset) => decodeExt(buffer, offset, 1, 2);
+    decoders[0xd6] = (buffer, offset) => decodeExt(buffer, offset, 1, 4);
+    decoders[0xd7] = (buffer, offset) => decodeExt(buffer, offset, 1, 8);
+    decoders[0xd8] = (buffer, offset) => decodeExt(buffer, offset, 1, 16);
 
     decoders[0xd9] = (buffer, offset) => new MsgStringBuffer(buffer, offset, 2, buffer.readUInt8(offset + 1));
     decoders[0xda] = (buffer, offset) => new MsgStringBuffer(buffer, offset, 3, buffer.readUInt16BE(offset + 1));
     decoders[0xdb] = (buffer, offset) => new MsgStringBuffer(buffer, offset, 5, buffer.readUInt32BE(offset + 1));
 
-    decoders[0xdc] = (buffer: Buffer, offset: number) => decodeArray(new A.MsgArray16(), buffer, offset, 3, buffer.readUInt16BE(offset + 1));
-    decoders[0xdd] = (buffer: Buffer, offset: number) => decodeArray(new A.MsgArray32(), buffer, offset, 5, buffer.readUInt32BE(offset + 1));
+    decoders[0xdc] = (buffer, offset) => decodeArray(new A.MsgArray16(), buffer, offset, 3, buffer.readUInt16BE(offset + 1));
+    decoders[0xdd] = (buffer, offset) => decodeArray(new A.MsgArray32(), buffer, offset, 5, buffer.readUInt32BE(offset + 1));
 
-    decoders[0xde] = (buffer: Buffer, offset: number) => decodeMap(new M.MsgMap16(), buffer, offset, 3, buffer.readUInt16BE(offset + 1));
-    decoders[0xdf] = (buffer: Buffer, offset: number) => decodeMap(new M.MsgMap32(), buffer, offset, 5, buffer.readUInt32BE(offset + 1));
+    decoders[0xde] = (buffer, offset) => decodeMap(new M.MsgMap16(), buffer, offset, 3, buffer.readUInt16BE(offset + 1));
+    decoders[0xdf] = (buffer, offset) => decodeMap(new M.MsgMap32(), buffer, offset, 5, buffer.readUInt32BE(offset + 1));
 
     for (i = 0xe0; i < 0x100; i++) decoders[i] = decodeFixInt;
 
