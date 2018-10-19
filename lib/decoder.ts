@@ -23,6 +23,7 @@ export function decodeMsg(buffer: Buffer, offset?: number): MsgInterface {
 function initDecoders(): Decoder[] {
     const decoders: Decoder[] = new Array(256);
     const cacheMsg: MsgInterface[] = new Array(256);
+    const cacheChr: MsgInterface[] = new Array(256);
 
     const decodeFixString: Decoder = (buffer, offset) => new MsgStringBuffer(buffer, offset, 1, buffer[offset] & 0x1f);
     const decodeFixArray: Decoder = (buffer, offset) => decodeArray(new MsgFixArray(), buffer, offset, 1, buffer[offset] & 0x0f);
@@ -30,9 +31,20 @@ function initDecoders(): Decoder[] {
 
     let i: number;
     for (i = 0x00; i < 0x80; i++) decoders[i] = decodeFixInt(i);
-    for (i = 0x80; i < 0x90; i++) decoders[i] = decodeFixMap;
-    for (i = 0x90; i < 0xa0; i++) decoders[i] = decodeFixArray;
-    for (i = 0xa0; i < 0xc0; i++) decoders[i] = decodeFixString;
+    for (i = 0x81; i < 0x90; i++) decoders[i] = decodeFixMap;
+    for (i = 0x91; i < 0xa0; i++) decoders[i] = decodeFixArray;
+    for (i = 0xa2; i < 0xc0; i++) decoders[i] = decodeFixString;
+
+    // empty
+    decoders[0x80] = (_buffer, _offset) => cacheMsg[0x80] || (cacheMsg[0x80] = new MsgFixMap());
+    decoders[0x90] = (_buffer, _offset) => cacheMsg[0x90] || (cacheMsg[0x90] = new MsgFixArray());
+    decoders[0xa0] = (_buffer, _offset) => cacheMsg[0xa0] || (cacheMsg[0xa0] = new MsgStringBuffer(Buffer.from([0xa0]), 0, 1, 0));
+
+    // single character string
+    decoders[0xa1] = (buffer, offset) => {
+        const code = buffer[offset + 1];
+        return cacheChr[code] || (cacheChr[code] = new MsgStringBuffer(Buffer.from([0xa1, code]), 0, 1, 1));
+    };
 
     decoders[0xc0] = (_buffer, _offset) => cacheMsg[0xc0] || (cacheMsg[0xc0] = new MsgNil());
     decoders[0xc2] = (_buffer, _offset) => cacheMsg[0xc2] || (cacheMsg[0xc2] = new MsgBoolean(false));
