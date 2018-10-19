@@ -22,20 +22,21 @@ export function decodeMsg(buffer: Buffer, offset?: number): MsgInterface {
 
 function initDecoders(): Decoder[] {
     const decoders: Decoder[] = new Array(256);
+    const cacheMsg: MsgInterface[] = new Array(256);
 
-    decoders[0xc0] = (_buffer, _offset) => new MsgNil();
-    decoders[0xc2] = (_buffer, _offset) => new MsgBoolean(false);
-    decoders[0xc3] = (_buffer, _offset) => new MsgBoolean(true);
-
-    const decodeString: Decoder = (buffer, offset) => new MsgStringBuffer(buffer, offset, 1, buffer[offset] & 0x1f);
+    const decodeFixString: Decoder = (buffer, offset) => new MsgStringBuffer(buffer, offset, 1, buffer[offset] & 0x1f);
     const decodeFixArray: Decoder = (buffer, offset) => decodeArray(new MsgFixArray(), buffer, offset, 1, buffer[offset] & 0x0f);
     const decodeFixMap: Decoder = (buffer, offset) => decodeMap(new MsgFixMap(), buffer, offset, 1, buffer[offset] & 0x0f);
 
-    let i;
-    for (i = 0x00; i < 0x80; i++) decoders[i] = decodeFixInt;
+    let i: number;
+    for (i = 0x00; i < 0x80; i++) decoders[i] = decodeFixInt(i);
     for (i = 0x80; i < 0x90; i++) decoders[i] = decodeFixMap;
     for (i = 0x90; i < 0xa0; i++) decoders[i] = decodeFixArray;
-    for (i = 0xa0; i < 0xc0; i++) decoders[i] = decodeString;
+    for (i = 0xa0; i < 0xc0; i++) decoders[i] = decodeFixString;
+
+    decoders[0xc0] = (_buffer, _offset) => cacheMsg[0xc0] || (cacheMsg[0xc0] = new MsgNil());
+    decoders[0xc2] = (_buffer, _offset) => cacheMsg[0xc2] || (cacheMsg[0xc2] = new MsgBoolean(false));
+    decoders[0xc3] = (_buffer, _offset) => cacheMsg[0xc3] || (cacheMsg[0xc3] = new MsgBoolean(true));
 
     decoders[0xc4] = (buffer, offset) => decodeBinary(buffer, offset, 2, buffer.readUInt8(offset + 1));
     decoders[0xc5] = (buffer, offset) => decodeBinary(buffer, offset, 3, buffer.readUInt16BE(offset + 1));
@@ -72,15 +73,12 @@ function initDecoders(): Decoder[] {
     decoders[0xde] = (buffer, offset) => decodeMap(new MsgMap16(), buffer, offset, 3, buffer.readUInt16BE(offset + 1));
     decoders[0xdf] = (buffer, offset) => decodeMap(new MsgMap32(), buffer, offset, 5, buffer.readUInt32BE(offset + 1));
 
-    for (i = 0xe0; i < 0x100; i++) decoders[i] = decodeFixInt;
+    for (i = 0xe0; i < 0x100; i++) decoders[i] = decodeFixInt(i);
 
     return decoders;
 
-    function decodeFixInt(buffer: Buffer, offset: number) {
-        offset |= 0;
-        let value = buffer[offset];
-        if (value > 127) value -= 256;
-        return new N.MsgFixInt(value);
+    function decodeFixInt(i: number): Decoder {
+        return (_buffer, _offset) => cacheMsg[i] || (cacheMsg[i] = new N.MsgFixInt(i > 127 ? i - 256 : i));
     }
 }
 

@@ -2,7 +2,7 @@ import {MsgInterface} from "msg-interface";
 
 export class MsgBoolean implements MsgInterface {
     msgpackLength: number;
-    protected value: boolean;
+    protected readonly value: boolean;
 
     constructor(value: boolean) {
         this.value = !!value;

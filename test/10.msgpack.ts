@@ -14,6 +14,9 @@ describe(TITLE, () => {
         assert.strictEqual(msg.valueOf(), null);
         assert.strictEqual(msg.msgpackLength, 1);
         assert.strictEqual(mtos(msg), "c0");
+
+        assert.strictEqual(atos(m.encode(null)), "c0");
+        assert.strictEqual(m.decode(Buffer.from([0xc0])), null);
     });
 
     it("MsgBoolean(true)", () => {
@@ -22,6 +25,9 @@ describe(TITLE, () => {
         assert.strictEqual(msg.valueOf(), true);
         assert.strictEqual(msg.msgpackLength, 1);
         assert.strictEqual(mtos(msg), "c3");
+
+        assert.strictEqual(atos(m.encode(true)), "c3");
+        assert.strictEqual(m.decode(Buffer.from([0xc3])), true);
     });
 
     it("MsgBoolean(false)", () => {
@@ -30,6 +36,9 @@ describe(TITLE, () => {
         assert.strictEqual(msg.valueOf(), false);
         assert.strictEqual(msg.msgpackLength, 1);
         assert.strictEqual(mtos(msg), "c2");
+
+        assert.strictEqual(atos(m.encode(false)), "c2");
+        assert.strictEqual(m.decode(Buffer.from([0xc2])), false);
     });
 
     it("MsgFixInt", () => {
@@ -43,7 +52,10 @@ describe(TITLE, () => {
         assert.strictEqual(mtos(new m.MsgFixInt(1)), "01");
         assert.strictEqual(mtos(new m.MsgFixInt(127)), "7f");
 
+        assert.strictEqual(atos(m.encode(-1)), "ff");
         assert.strictEqual(atos(m.encode(127)), "7f");
+        assert.strictEqual(m.decode(Buffer.from([0xff])), -1);
+        assert.strictEqual(m.decode(Buffer.from([0x7f])), 127);
     });
 
     it("MsgInt8", () => {
