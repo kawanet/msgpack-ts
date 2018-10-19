@@ -23,11 +23,11 @@ export declare class MsgString32 extends MsgString {
     writeMsgpackTo(buffer: Buffer, offset: number): number;
 }
 export declare class MsgStringBuffer implements MsgStringInterface {
-    msgpackLength: number;
     protected buffer: Buffer;
     protected offset: number;
     protected skip: number;
-    constructor(buffer: Buffer, offset: number);
+    msgpackLength: number;
+    constructor(buffer: Buffer, offset: number, skip: number, size: number);
     valueOf(): string;
     writeMsgpackTo(buffer: Buffer, offset: number): number;
 }
