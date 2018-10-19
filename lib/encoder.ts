@@ -1,13 +1,12 @@
 "use strict";
 
 import {isMsg, MsgInterface} from "msg-interface";
-import {MsgInt64, MsgUInt64} from "msg-int64";
+import * as N from "msg-number";
 
 import {MsgArray16, MsgArray32, MsgFixArray} from "./msg-array";
 import {MsgBinary} from "./msg-binary";
 import {MsgBoolean} from "./msg-boolean";
 import {MsgFixMap, MsgMap16, MsgMap32} from "./msg-map";
-import * as N from "./msg-number";
 import {MsgNil} from "./msg-nil";
 import {MsgString} from "./msg-string";
 
@@ -79,12 +78,12 @@ function encodeObject(value: object): MsgInterface {
         return new MsgBinary(value);
     }
 
-    if (MsgInt64.isInt64BE(value)) {
-        return new MsgInt64(value.toBuffer());
+    if (N.MsgInt64.isInt64BE(value)) {
+        return new N.MsgInt64(value.toBuffer());
     }
 
-    if (MsgUInt64.isUint64BE(value)) {
-        return new MsgUInt64(value.toBuffer());
+    if (N.MsgUInt64.isUint64BE(value)) {
+        return new N.MsgUInt64(value.toBuffer());
     }
 
     {

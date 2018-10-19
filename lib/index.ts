@@ -10,7 +10,7 @@ export * from "./msg-binary";
 export * from "./msg-boolean";
 export * from "./msg-map";
 export * from "./msg-nil";
-export * from "./msg-number";
+export * from "msg-number";
 export * from "./msg-string";
 
 export function encode(value: any): Buffer {

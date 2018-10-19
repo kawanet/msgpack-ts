@@ -1,6 +1,6 @@
 import {MsgExt} from "msg-ext";
 import {MsgInterface} from "msg-interface";
-import {MsgInt64, MsgUInt64} from "msg-int64";
+import * as N from "msg-number";
 
 import {MsgArrayInterface} from "./msg-array";
 import {MsgBinary} from "./msg-binary";
@@ -25,7 +25,6 @@ export function decodeMsg(buffer: Buffer, offset?: number): MsgInterface {
 function initDecoders(): Decoder[] {
     const A = require("./msg-array");
     const M = require("./msg-map");
-    const N = require("./msg-number");
     const S = require("./msg-string");
 
     const decoders = new Array(256);
@@ -57,11 +56,11 @@ function initDecoders(): Decoder[] {
     decoders[0xcc] = (buffer: Buffer, offset: number) => new N.MsgUInt8(buffer.readUInt8(offset + 1));
     decoders[0xcd] = (buffer: Buffer, offset: number) => new N.MsgUInt16(buffer.readUInt16BE(offset + 1));
     decoders[0xce] = (buffer: Buffer, offset: number) => new N.MsgUInt32(buffer.readUInt32BE(offset + 1));
-    decoders[0xcf] = (buffer: Buffer, offset: number) => new MsgUInt64(buffer, offset + 1);
+    decoders[0xcf] = (buffer: Buffer, offset: number) => new N.MsgUInt64(buffer, offset + 1);
     decoders[0xd0] = (buffer: Buffer, offset: number) => new N.MsgInt8(buffer.readInt8(offset + 1));
     decoders[0xd1] = (buffer: Buffer, offset: number) => new N.MsgInt16(buffer.readInt16BE(offset + 1));
     decoders[0xd2] = (buffer: Buffer, offset: number) => new N.MsgInt32(buffer.readInt32BE(offset + 1));
-    decoders[0xd3] = (buffer: Buffer, offset: number) => new MsgInt64(buffer, offset + 1);
+    decoders[0xd3] = (buffer: Buffer, offset: number) => new N.MsgInt64(buffer, offset + 1);
 
     decoders[0xd4] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 1, 1);
     decoders[0xd5] = (buffer: Buffer, offset: number) => decodeExt(buffer, offset, 1, 2);
